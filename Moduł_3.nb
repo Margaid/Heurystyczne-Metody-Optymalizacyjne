@@ -1,0 +1,2495 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[    110112,       2487]
+NotebookOptionsPosition[    106277,       2420]
+NotebookOutlinePosition[    106728,       2437]
+CellTagsIndexPosition[    106685,       2434]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["1. Zaimplementuj algorytm Metropolisa.", "Subtitle",
+ CellChangeTimes->{{3.889501049586855*^9, 
+  3.8895010506146455`*^9}},ExpressionUUID->"6427cda6-5590-4d1b-b288-\
+23b067b4111f"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"Metropolis", "[", 
+    RowBox[{
+    "f_", ",", "xmin_", ",", "xmax_", ",", "ymin_", ",", "ymax_", ",", 
+     "temperature_", ",", "iterations_", ",", "numberOfPoints_", ",", "e_", 
+     ",", "randomPoint_"}], "]"}], ":=", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"xBest", "=", 
+        RowBox[{"{", "}"}]}], ",", 
+       RowBox[{"x0", "=", 
+        RowBox[{"{", "}"}]}], ",", 
+       RowBox[{"x", "=", 
+        RowBox[{"{", "}"}]}], ",", 
+       RowBox[{"neighborhood", "=", 
+        RowBox[{"{", "}"}]}], ",", "energyOfTheParticle", ",", "indexOfMin", 
+       ",", 
+       RowBox[{"valueNeighborhood", "=", 
+        RowBox[{"{", "}"}]}], ",", 
+       RowBox[{"bestValues", "=", 
+        RowBox[{"{", "}"}]}], ",", 
+       RowBox[{"bestPoints", "=", 
+        RowBox[{"{", "}"}]}], ",", 
+       RowBox[{"means", "=", 
+        RowBox[{"{", "}"}]}], ",", "bestPoint", ",", " ", "bestValue", ",", 
+       "random"}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"(*", 
+      RowBox[{
+       RowBox[{"losowe", " ", "rozwi\:0105zanie", " ", "pocz\:0105tkowe"}], 
+       ",", " ", 
+       RowBox[{
+       "kt\[OAcute]re", " ", "b\:0119dzie", " ", "te\:017c", " ", 
+        "najlepszym", " ", "punktem", " ", "na", " ", "samym", " ", 
+        "pocz\:0105tku", " ", "oraz", " ", "punktem", " ", 
+        "bie\:017c\:0105cym"}], ",", " ", 
+       RowBox[{"okre\:015blenie", " ", "jego", " ", "jako\:015bci"}]}], " ", 
+      "*)"}], "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"x0", " ", "=", "randomPoint"}], ";", "\[IndentingNewLine]", 
+      RowBox[{"bestPoint", "=", " ", "x0"}], ";", "\[IndentingNewLine]", 
+      RowBox[{"bestValue", " ", "=", " ", 
+       RowBox[{"f", "[", 
+        RowBox[{
+         RowBox[{
+         "bestPoint", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], 
+         ",", 
+         RowBox[{
+         "bestPoint", "\[LeftDoubleBracket]", "2", 
+          "\[RightDoubleBracket]"}]}], "]"}]}], ";", "\[IndentingNewLine]", 
+      "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{"punkt", " ", "bie\:017c\:0105cy"}], "*)"}], 
+      "\[IndentingNewLine]", 
+      RowBox[{"x", "=", "x0"}], ";", "\[IndentingNewLine]", 
+      RowBox[{"(*", " ", 
+       RowBox[{"i", " ", "-", " ", 
+        RowBox[{"liczba", " ", "iteracji"}]}], " ", "*)"}], 
+      "\[IndentingNewLine]", 
+      RowBox[{"i", "=", "0"}], ";", "\[IndentingNewLine]", 
+      RowBox[{"(*", " ", 
+       RowBox[{
+       "dodanie", " ", "do", " ", "list", " ", "najlepszego", " ", "punktu", 
+        " ", "oraz", " ", "jego", " ", "jako\:015bci"}], " ", "*)"}], 
+      "\[IndentingNewLine]", 
+      RowBox[{"bestPoints", "=", 
+       RowBox[{"Append", "[", 
+        RowBox[{"bestPoints", ",", "bestPoint"}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"bestValues", " ", "=", " ", 
+       RowBox[{"Append", "[", 
+        RowBox[{"bestValues", ",", "bestValue"}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{
+        RowBox[{"rozpocz\:0119cie", " ", "p\:0119tli"}], ",", " ", 
+        RowBox[{
+         RowBox[{"warunek", " ", "zatrzymania"}], " ", "\[Rule]", " ", 
+         RowBox[{"okr\:0119slona", " ", "ilo\:015bc", " ", "iteracji"}]}]}], 
+       " ", "*)"}], "\[IndentingNewLine]", 
+      RowBox[{"While", "[", 
+       RowBox[{
+        RowBox[{"i", "<", "iterations"}], ",", "\[IndentingNewLine]", 
+        RowBox[{"(*", 
+         RowBox[{"wygenerowanie", " ", "s\:0105siedztwa"}], " ", "*)"}], 
+        "\[IndentingNewLine]", 
+        RowBox[{
+         RowBox[{"neighborhood", "=", 
+          RowBox[{"RandomPoint", "[", 
+           RowBox[{
+            RowBox[{"Rectangle", "[", 
+             RowBox[{
+              RowBox[{"bestPoint", "-", "e"}], ",", 
+              RowBox[{"bestPoint", "+", "e"}]}], "]"}], ",", 
+            "numberOfPoints"}], "]"}]}], ";", "\[IndentingNewLine]", 
+         "\[IndentingNewLine]", 
+         RowBox[{"(*", 
+          RowBox[{
+          "obliczenie", " ", "jako\:015bci", " ", "dla", " ", "wszystkich", 
+           " ", "punkt\[OAcute]w", " ", "w", " ", "sasiedztwie"}], "*)"}], 
+         "\[IndentingNewLine]", 
+         RowBox[{"valueNeighborhood", " ", "=", " ", 
+          RowBox[{"Table", "[", 
+           RowBox[{
+            RowBox[{"f", "[", 
+             RowBox[{
+              RowBox[{"neighborhood", "\[LeftDoubleBracket]", 
+               RowBox[{"i", ",", "1"}], "\[RightDoubleBracket]"}], ",", 
+              RowBox[{"neighborhood", "\[LeftDoubleBracket]", 
+               RowBox[{"i", ",", "2"}], "\[RightDoubleBracket]"}]}], "]"}], 
+            ",", 
+            RowBox[{"{", 
+             RowBox[{"i", ",", "1", ",", "numberOfPoints"}], "}"}]}], "]"}]}],
+          ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+         RowBox[{"(*", 
+          RowBox[{
+          "znalezienie", " ", "optymalnego", " ", "punktu", " ", 
+           "bie\:017c\:0105cego", " ", "i", " ", "jego", " ", "indeksu"}], 
+          "*)"}], "\[IndentingNewLine]", 
+         RowBox[{"indexOfMin", " ", "=", " ", 
+          RowBox[{"Position", "[", 
+           RowBox[{"valueNeighborhood", ",", " ", 
+            RowBox[{"Min", "[", "valueNeighborhood", "]"}]}], "]"}]}], ";", 
+         "\[IndentingNewLine]", 
+         RowBox[{"(*", " ", 
+          RowBox[{"policzenie", " ", "energii", " ", "cz\:0105teczki"}], " ", 
+          "*)"}], "\[IndentingNewLine]", 
+         RowBox[{"energyOfTheParticle", " ", "=", " ", 
+          RowBox[{
+           RowBox[{"f", "[", 
+            RowBox[{
+             RowBox[{"neighborhood", "\[LeftDoubleBracket]", 
+              RowBox[{
+               RowBox[{"indexOfMin", "\[LeftDoubleBracket]", 
+                RowBox[{"1", ",", "1"}], "\[RightDoubleBracket]"}], ",", 
+               "1"}], "\[RightDoubleBracket]"}], ",", 
+             RowBox[{"neighborhood", "\[LeftDoubleBracket]", 
+              RowBox[{
+               RowBox[{"indexOfMin", "\[LeftDoubleBracket]", 
+                RowBox[{"1", ",", "1"}], "\[RightDoubleBracket]"}], ",", 
+               "2"}], "\[RightDoubleBracket]"}]}], "]"}], "-", 
+           RowBox[{"f", "[", 
+            RowBox[{
+             RowBox[{
+             "x", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], ",", 
+             RowBox[{
+             "x", "\[LeftDoubleBracket]", "2", "\[RightDoubleBracket]"}]}], 
+            "]"}]}]}], ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+         RowBox[{"(*", 
+          RowBox[{
+           RowBox[{
+           "je\:015bli", " ", "warto\:015b\[CAcute]", " ", "cz\:0105steczki", 
+            " ", "jest", " ", "mniejsza", " ", "od", " ", "0"}], ",", " ", 
+           RowBox[{
+           "to", " ", "przypisujemy", " ", "do", " ", "punktu", " ", 
+            "bie\:017c\:0105cego", " ", "najlepszy", " ", "punkt", " ", "z", 
+            " ", "s\:0105siedztwa"}]}], "*)"}], "\[IndentingNewLine]", 
+         RowBox[{"If", "[", 
+          RowBox[{
+           RowBox[{"energyOfTheParticle", "<", "0"}], ",", 
+           "\[IndentingNewLine]", 
+           RowBox[{
+            RowBox[{"x", " ", "=", " ", 
+             RowBox[{"neighborhood", "\[LeftDoubleBracket]", 
+              RowBox[{"indexOfMin", "\[LeftDoubleBracket]", 
+               RowBox[{"1", ",", "1"}], "\[RightDoubleBracket]"}], 
+              "\[RightDoubleBracket]"}]}], ";", "\[IndentingNewLine]", 
+            RowBox[{"(*", 
+             RowBox[{
+              RowBox[{
+              "je\:015bli", " ", "jako\:015b\[CAcute]", " ", "najlepszego", 
+               " ", "punktu", " ", "jest", " ", "wi\:0119ksza", " ", "od", 
+               " ", "najmniejszej", " ", "jako\:015bci", " ", "z", " ", 
+               "wygenerowanego", " ", "s\:0105siedztwa"}], " ", "-", " ", 
+              RowBox[{
+              "przypisanie", " ", "go", " ", "do", " ", "najlepszej", " ", 
+               "jako\:015bci", " ", "oraz", " ", "odpowiedniego", " ", 
+               "punktu", " ", "do", " ", "najlepszego"}]}], "*)"}], 
+            "\[IndentingNewLine]", 
+            RowBox[{"If", "[", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"valueNeighborhood", "\[LeftDoubleBracket]", 
+                RowBox[{"indexOfMin", "\[LeftDoubleBracket]", 
+                 RowBox[{"1", ",", "1"}], "\[RightDoubleBracket]"}], 
+                "\[RightDoubleBracket]"}], "<", " ", 
+               RowBox[{"f", "[", 
+                RowBox[{
+                 RowBox[{
+                 "bestPoint", "\[LeftDoubleBracket]", "1", 
+                  "\[RightDoubleBracket]"}], ",", 
+                 RowBox[{
+                 "bestPoint", "\[LeftDoubleBracket]", "2", 
+                  "\[RightDoubleBracket]"}]}], "]"}]}], ",", 
+              "\[IndentingNewLine]", 
+              RowBox[{
+               RowBox[{"bestPoint", " ", "=", " ", 
+                RowBox[{"neighborhood", "\[LeftDoubleBracket]", 
+                 RowBox[{"indexOfMin", "\[LeftDoubleBracket]", 
+                  RowBox[{"1", ",", "1"}], "\[RightDoubleBracket]"}], 
+                 "\[RightDoubleBracket]"}]}], ";", "\[IndentingNewLine]", 
+               RowBox[{"bestValue", "=", 
+                RowBox[{"f", "[", 
+                 RowBox[{
+                  RowBox[{
+                  "bestPoint", "\[LeftDoubleBracket]", "1", 
+                   "\[RightDoubleBracket]"}], ",", 
+                  RowBox[{
+                  "bestPoint", "\[LeftDoubleBracket]", "2", 
+                   "\[RightDoubleBracket]"}]}], "]"}]}]}]}], 
+             "\[IndentingNewLine]", "]"}], ";"}], ",", "\[IndentingNewLine]", 
+           RowBox[{"(*", " ", 
+            RowBox[{
+             RowBox[{
+             "je\:015bli", " ", "warto\:015b\[CAcute]", " ", 
+              "cz\:0105steczki", " ", "nie", " ", "jest", " ", "mniejsza", 
+              " ", "od", " ", "0"}], ",", " ", 
+             RowBox[{
+             "to", " ", "losujemy", " ", "liczb\:0119", " ", 
+              "pseudolosow\:0105", " ", "o", " ", "rozk\[LSlash]adzie", " ", 
+              "r\[OAcute]wnomiernym", " ", "o", " ", "przedziale", " ", 
+              RowBox[{"(", 
+               RowBox[{"0", ",", "1"}], ")"}]}]}], "*)"}], 
+           "\[IndentingNewLine]", 
+           RowBox[{
+            RowBox[{"random", "  ", "=", " ", 
+             RowBox[{"RandomReal", "[", 
+              RowBox[{"{", 
+               RowBox[{"0", ",", "1"}], "}"}], "]"}]}], ";", 
+            "\[IndentingNewLine]", 
+            RowBox[{"(*", 
+             RowBox[{
+             "je\:015bli", " ", "wylosowana", " ", "liczba", " ", "jest", " ",
+               "mniejsza", " ", "od", " ", "funkcji", " ", "eksponencjalnej", 
+              " ", "to", " ", "punktem", " ", "bie\:017c\:0105cym", " ", 
+              "jest", " ", "punkt", " ", "z", " ", "s\:0105siedztwa", " ", 
+              "o", " ", "najmniejszej", " ", "jako\:015bci"}], " ", "*)"}], 
+            "\[IndentingNewLine]", 
+            RowBox[{"If", "[", 
+             RowBox[{
+              RowBox[{"random", " ", "<", " ", 
+               RowBox[{"Exp", "[", 
+                RowBox[{"-", 
+                 RowBox[{"(", 
+                  RowBox[{"energyOfTheParticle", "/", "temperature"}], 
+                  ")"}]}], "]"}]}], ",", "\[IndentingNewLine]", 
+              RowBox[{
+               RowBox[{"x", "=", " ", 
+                RowBox[{"neighborhood", "\[LeftDoubleBracket]", 
+                 RowBox[{"indexOfMin", "\[LeftDoubleBracket]", 
+                  RowBox[{"1", ",", "1"}], "\[RightDoubleBracket]"}], 
+                 "\[RightDoubleBracket]"}]}], ";"}]}], "\[IndentingNewLine]", 
+             "]"}], ";"}]}], "\[IndentingNewLine]", "]"}], ";", 
+         "\[IndentingNewLine]", 
+         RowBox[{"(*", 
+          RowBox[{
+           RowBox[{
+           "dodanie", " ", "odpowiednich", " ", "warto\:015bci", " ", "do", 
+            " ", "list"}], ",", " ", 
+           RowBox[{"czyli", " ", "najlepszy", " ", "punkt"}], ",", " ", 
+           RowBox[{"najlepsza", " ", "jako\:015b\[CAcute]"}], ",", " ", 
+           RowBox[{
+           "\:015brednia", " ", "jako\:015bci", " ", "wszystkich", " ", 
+            "punkt\[OAcute]w", " ", "w", " ", "s\:0105siedztwie"}]}], "*)"}], 
+         "\[IndentingNewLine]", 
+         RowBox[{"bestPoints", "=", 
+          RowBox[{"Append", "[", 
+           RowBox[{"bestPoints", ",", "bestPoint"}], "]"}]}], ";", 
+         "\[IndentingNewLine]", 
+         RowBox[{"bestValues", " ", "=", " ", 
+          RowBox[{"Append", "[", 
+           RowBox[{"bestValues", ",", " ", "bestValue"}], "]"}]}], ";", 
+         "\[IndentingNewLine]", 
+         RowBox[{"means", "=", 
+          RowBox[{"Append", "[", 
+           RowBox[{"means", ",", 
+            RowBox[{
+             RowBox[{"Total", "[", "valueNeighborhood", "]"}], "/", 
+             RowBox[{"Length", "[", "valueNeighborhood", "]"}]}]}], "]"}]}], 
+         ";", "\[IndentingNewLine]", 
+         RowBox[{"i", "++"}], ";"}]}], "\[IndentingNewLine]", "]"}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{
+       "zwr\[OAcute]cenie", " ", "potrzebnych", " ", "warto\:015bci"}], " ", 
+       "*)"}], "\[IndentingNewLine]", 
+      RowBox[{"Return", "[", 
+       RowBox[{"{", 
+        RowBox[{
+        "bestPoint", ",", "bestValue", " ", ",", "bestValues", ",", "means", 
+         ",", "bestPoints", ",", "f", ",", "xmin", ",", "xmax", ",", "ymin", 
+         ",", "ymax", ",", "iterations"}], " ", "}"}], "]"}], ";"}]}], 
+    "\[IndentingNewLine]", "]"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.890638227032923*^9, 3.890638317949651*^9}, {
+   3.8906383787155094`*^9, 3.890638394134289*^9}, {3.890638425948491*^9, 
+   3.8906384303919067`*^9}, {3.890638475136985*^9, 3.890638496207062*^9}, {
+   3.8906385725103908`*^9, 3.8906386277994566`*^9}, {3.8906386701791124`*^9, 
+   3.8906386911871953`*^9}, {3.8906387708116765`*^9, 3.890638778626725*^9}, {
+   3.8906388867295036`*^9, 3.8906388938509283`*^9}, {3.890638928590907*^9, 
+   3.8906389299078283`*^9}, {3.8906396976841755`*^9, 
+   3.8906397238381724`*^9}, {3.890639770108322*^9, 3.8906397869337473`*^9}, {
+   3.8906419550683856`*^9, 3.890641983602439*^9}, 3.8906420315926385`*^9, {
+   3.890642191337181*^9, 3.8906422056169596`*^9}, {3.89064241515329*^9, 
+   3.890642425039963*^9}, 3.8906424645917215`*^9, {3.890642534514562*^9, 
+   3.8906425368763437`*^9}, {3.8906425777891955`*^9, 3.890642582781203*^9}, {
+   3.8906427595827446`*^9, 3.890642811373477*^9}, {3.8906428501105366`*^9, 
+   3.890642851066393*^9}, {3.8906429826336613`*^9, 3.8906429908006086`*^9}, {
+   3.890643023193668*^9, 3.8906430539009857`*^9}, {3.8906431704335628`*^9, 
+   3.890643175197747*^9}, {3.8906432226202965`*^9, 3.8906433219036217`*^9}, {
+   3.8906433767561245`*^9, 3.890643378135742*^9}, {3.890643408187905*^9, 
+   3.890643410691598*^9}, {3.890643441358341*^9, 3.890643457195753*^9}, 
+   3.890648909258581*^9, {3.890648979471608*^9, 3.8906490456118584`*^9}, {
+   3.890649102780629*^9, 3.890649130419881*^9}, {3.890649361747363*^9, 
+   3.89064946250851*^9}, {3.8906495021414547`*^9, 3.8906495352705965`*^9}, {
+   3.890649568200446*^9, 3.8906496112101593`*^9}, {3.8906496850113077`*^9, 
+   3.8906497600845385`*^9}, {3.890649791477775*^9, 3.8906498726412563`*^9}, {
+   3.8906499409596305`*^9, 3.8906500262626076`*^9}, {3.890650405290001*^9, 
+   3.8906504138074102`*^9}, {3.8906570165353713`*^9, 
+   3.8906571641945915`*^9}, {3.8906571952844715`*^9, 3.890657247187535*^9}, {
+   3.890657283996482*^9, 3.890657591114336*^9}, {3.890657723542461*^9, 
+   3.890657735094677*^9}, {3.890657769602561*^9, 3.8906577933482676`*^9}, {
+   3.8906578426746073`*^9, 3.890657852011472*^9}, {3.890657883665057*^9, 
+   3.8906579023853292`*^9}, {3.8906579582036915`*^9, 
+   3.8906579831269083`*^9}, {3.8906621023606167`*^9, 
+   3.8906621064561157`*^9}, {3.890662182500108*^9, 3.8906621863808413`*^9}},
+ CellLabel->"In[3]:=",ExpressionUUID->"bfbda36e-83c7-4eb7-89af-46ec527a53cc"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Metropolis", "[", 
+   RowBox[{"SphericFunction2D", ",", 
+    RowBox[{"-", "5"}], ",", "5", ",", 
+    RowBox[{"-", "5"}], ",", "5", ",", "500", ",", "50", ",", "5", ",", "0.1",
+     ",", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"RandomReal", "[", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"-", "5"}], ",", "5"}], "}"}], "]"}], ",", 
+      RowBox[{"RandomReal", "[", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"-", "5"}], ",", "5"}], "}"}], "]"}]}], "}"}]}], "]"}], "[", 
+  RowBox[{"[", "1", "]"}], "]"}]], "Input",
+ CellChangeTimes->{{3.890655432159443*^9, 3.8906554552438574`*^9}},
+ CellLabel->"In[4]:=",ExpressionUUID->"e6b6f34e-8b6a-46e8-9b72-c261e6d26d75"],
+
+Cell[BoxData[
+ TemplateBox[{
+  "Part", "partw", 
+   "\"Part \\!\\(\\*RowBox[{\\\"1\\\"}]\\) of \\!\\(\\*RowBox[{\\\"{\\\", \
+\\\"}\\\"}]\\) does not exist.\"", 2, 4, 9, 29791110870167109968, "Local"},
+  "MessageTemplate"]], "Message", "MSG",
+ CellChangeTimes->{3.8906669036433096`*^9},
+ CellLabel->
+  "During evaluation of \
+In[4]:=",ExpressionUUID->"b8989eb3-fd6d-42f9-b466-f5fec6b97438"],
+
+Cell[BoxData[
+ TemplateBox[{
+  "Part", "pkspec1", 
+   "\"The expression \\!\\(\\*RowBox[{RowBox[{\\\"{\\\", \\\"}\\\"}], \\\"\
+\[LeftDoubleBracket]\\\", RowBox[{\\\"1\\\", \\\",\\\", \\\"1\\\"}], \\\"\
+\[RightDoubleBracket]\\\"}]\\) cannot be used as a part specification.\"", 2, 
+   4, 10, 29791110870167109968, "Local"},
+  "MessageTemplate"]], "Message", "MSG",
+ CellChangeTimes->{3.8906669036433096`*^9},
+ CellLabel->
+  "During evaluation of \
+In[4]:=",ExpressionUUID->"bcafa962-ab54-4d35-935b-cabbb8b53152"],
+
+Cell[BoxData[
+ TemplateBox[{
+  "Part", "partw", 
+   "\"Part \\!\\(\\*RowBox[{\\\"1\\\"}]\\) of \\!\\(\\*RowBox[{\\\"{\\\", \
+\\\"}\\\"}]\\) does not exist.\"", 2, 4, 11, 29791110870167109968, "Local"},
+  "MessageTemplate"]], "Message", "MSG",
+ CellChangeTimes->{3.8906669036586037`*^9},
+ CellLabel->
+  "During evaluation of \
+In[4]:=",ExpressionUUID->"b00b4a0f-ccbb-4e25-98db-e2f57bb11249"],
+
+Cell[BoxData[
+ TemplateBox[{
+  "Part", "pkspec1", 
+   "\"The expression \\!\\(\\*RowBox[{RowBox[{\\\"{\\\", \\\"}\\\"}], \\\"\
+\[LeftDoubleBracket]\\\", RowBox[{\\\"1\\\", \\\",\\\", \\\"1\\\"}], \\\"\
+\[RightDoubleBracket]\\\"}]\\) cannot be used as a part specification.\"", 2, 
+   4, 12, 29791110870167109968, "Local"},
+  "MessageTemplate"]], "Message", "MSG",
+ CellChangeTimes->{3.8906669036591077`*^9},
+ CellLabel->
+  "During evaluation of \
+In[4]:=",ExpressionUUID->"58b33f09-47a7-45d7-85e0-fefe3f9231e3"],
+
+Cell[BoxData[
+ TemplateBox[{
+  "Part", "pkspec1", 
+   "\"The expression \\!\\(\\*RowBox[{RowBox[{\\\"{\\\", \\\"}\\\"}], \\\"\
+\[LeftDoubleBracket]\\\", RowBox[{\\\"1\\\", \\\",\\\", \\\"1\\\"}], \\\"\
+\[RightDoubleBracket]\\\"}]\\) cannot be used as a part specification.\"", 2, 
+   4, 13, 29791110870167109968, "Local"},
+  "MessageTemplate"]], "Message", "MSG",
+ CellChangeTimes->{3.890666903666566*^9},
+ CellLabel->
+  "During evaluation of \
+In[4]:=",ExpressionUUID->"5884c679-8a96-4aab-8df4-3bb1a82e4b73"],
+
+Cell[BoxData[
+ TemplateBox[{
+  "General", "stop", 
+   "\"Further output of \\!\\(\\*StyleBox[RowBox[{\\\"Part\\\", \\\"::\\\", \
+\\\"pkspec1\\\"}], \\\"MessageName\\\"]\\) will be suppressed during this \
+calculation.\"", 2, 4, 14, 29791110870167109968, "Local"},
+  "MessageTemplate"]], "Message", "MSG",
+ CellChangeTimes->{3.890666903673109*^9},
+ CellLabel->
+  "During evaluation of \
+In[4]:=",ExpressionUUID->"34e73b64-9db4-4ab6-868f-ccbad44889a1"],
+
+Cell[BoxData[
+ TemplateBox[{
+  "Part", "partw", 
+   "\"Part \\!\\(\\*RowBox[{\\\"1\\\"}]\\) of \\!\\(\\*RowBox[{\\\"{\\\", \
+\\\"}\\\"}]\\) does not exist.\"", 2, 4, 15, 29791110870167109968, "Local"},
+  "MessageTemplate"]], "Message", "MSG",
+ CellChangeTimes->{3.890666903676085*^9},
+ CellLabel->
+  "During evaluation of \
+In[4]:=",ExpressionUUID->"baecbfc1-063d-4d1e-a71f-e9d525fc3701"],
+
+Cell[BoxData[
+ TemplateBox[{
+  "General", "stop", 
+   "\"Further output of \\!\\(\\*StyleBox[RowBox[{\\\"Part\\\", \\\"::\\\", \
+\\\"partw\\\"}], \\\"MessageName\\\"]\\) will be suppressed during this \
+calculation.\"", 2, 4, 16, 29791110870167109968, "Local"},
+  "MessageTemplate"]], "Message", "MSG",
+ CellChangeTimes->{3.890666903682051*^9},
+ CellLabel->
+  "During evaluation of \
+In[4]:=",ExpressionUUID->"63da89d4-23f0-460e-9400-cc78f96ea011"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"-", "0.07291441659869236`"}], ",", 
+   RowBox[{"-", "1.1891773681753133`"}]}], "}"}]], "Output",
+ CellChangeTimes->{{3.890655108400465*^9, 3.8906551158629436`*^9}, {
+   3.890655435226735*^9, 3.890655456281191*^9}, 3.8906572499016557`*^9, 
+   3.8906579953434916`*^9, 3.8906669036908684`*^9},
+ CellLabel->"Out[4]=",ExpressionUUID->"61b29898-f96e-4e0f-8d98-b445d8affd9f"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+2. Rozbuduj algorytm z punktu 1. do pe\[LSlash]nego algorytmu Symulowanego Wy\
+\:017carzania (z dowoln\:0105 funkcj\:0105 obni\:017cania temperatury).\
+\>", "Subtitle",
+ CellChangeTimes->{{3.8895010697345*^9, 
+  3.8895010707814837`*^9}},ExpressionUUID->"05d50c6e-e626-46c5-abc3-\
+671180139697"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"symulowaneWy\:017carzanie", "[", 
+    RowBox[{
+    "f_", ",", "xmin_", ",", "xmax_", ",", "ymin_", ",", "ymax_", ",", 
+     "temperature_", ",", "iterations_", ",", "numberOfPoints_", ",", "e_", 
+     ",", "randomPoint_"}], "]"}], ":=", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"xBest", "=", 
+        RowBox[{"{", "}"}]}], ",", 
+       RowBox[{"x0", "=", 
+        RowBox[{"{", "}"}]}], ",", 
+       RowBox[{"x", "=", 
+        RowBox[{"{", "}"}]}], ",", 
+       RowBox[{"neighborhood", "=", 
+        RowBox[{"{", "}"}]}], ",", "energyOfTheParticle", ",", "indexOfMin", 
+       ",", 
+       RowBox[{"valueNeighborhood", "=", 
+        RowBox[{"{", "}"}]}], ",", 
+       RowBox[{"bestValues", "=", 
+        RowBox[{"{", "}"}]}], ",", "values", ",", 
+       RowBox[{"bestPoints", "=", 
+        RowBox[{"{", "}"}]}], ",", 
+       RowBox[{"means", "=", 
+        RowBox[{"{", "}"}]}], ",", "bestPoint", ",", " ", "bestValue", ",", 
+       RowBox[{"mean", "=", 
+        RowBox[{"{", "}"}]}], ",", "random", ",", "temp", ",", 
+       "bestValueOverallIndex", ",", "bestValueOverall", ",", 
+       "bestPointOverall", ",", "j"}], "}"}], ",", "\[IndentingNewLine]", 
+     "\[IndentingNewLine]", 
+     RowBox[{"(*", 
+      RowBox[{"losowe", " ", "rozwi\:0105zanie", " ", "pocz\:0105tkowe"}], 
+      " ", "*)"}], "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"x0", " ", "=", "randomPoint"}], ";", "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{
+        RowBox[{"przypisanie", " ", "rozwi\:0105zania", " ", "poczatkowego"}],
+         ",", " ", 
+        RowBox[{"do", " ", "najlepszego", " ", "punktu"}], ",", " ", 
+        RowBox[{"okre\:015blenie", " ", "jego", " ", "jako\:015bci"}]}], 
+       "*)"}], "\[IndentingNewLine]", 
+      RowBox[{"bestPoint", "=", " ", "x0"}], ";", "\[IndentingNewLine]", 
+      RowBox[{"bestValue", " ", "=", " ", 
+       RowBox[{"f", "[", 
+        RowBox[{
+         RowBox[{
+         "bestPoint", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], 
+         ",", 
+         RowBox[{
+         "bestPoint", "\[LeftDoubleBracket]", "2", 
+          "\[RightDoubleBracket]"}]}], "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{
+        RowBox[{"wybranie", " ", "pocz\:0105tkowej", " ", "temperatury"}], 
+        " ", "-", " ", 
+        RowBox[{"podana", " ", "przez", " ", "u\:017cytkownika"}]}], "*)"}], 
+      "\[IndentingNewLine]", 
+      RowBox[{"temp", "=", "temperature"}], ";", "\[IndentingNewLine]", 
+      RowBox[{"(*", " ", 
+       RowBox[{
+       "okre\:015blenie", " ", "funkcji", " ", "spadku", " ", "temperatury", 
+        " ", "t"}], " ", "*)"}], "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"\[Alpha]", "[", "t_", "]"}], ":=", 
+       RowBox[{"0.9", "*", "t"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"(*", " ", 
+       RowBox[{"j", " ", "-", " ", 
+        RowBox[{"liczba", " ", "iteracji"}]}], " ", "*)"}], 
+      "\[IndentingNewLine]", 
+      RowBox[{"j", "=", "0"}], ";", "\[IndentingNewLine]", 
+      "\[IndentingNewLine]", 
+      RowBox[{"bestPoints", "=", 
+       RowBox[{"Append", "[", 
+        RowBox[{"bestPoints", ",", "bestPoint"}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"bestValues", " ", "=", " ", 
+       RowBox[{"Append", "[", 
+        RowBox[{"bestValues", ",", "bestValue"}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"(*", " ", 
+       RowBox[{
+        RowBox[{"warunek", " ", "zatrzymania"}], " ", "\[Rule]", " ", 
+        RowBox[{
+        "temperatura", " ", "nie", " ", "jest", " ", "wi\:0119ksza", " ", 
+         "od", " ", "1"}]}], " ", "*)"}], "\[IndentingNewLine]", 
+      RowBox[{"While", "[", 
+       RowBox[{
+        RowBox[{"temp", ">", "1"}], ",", "\[IndentingNewLine]", 
+        RowBox[{
+         RowBox[{"i", "=", "0"}], ";", "\[IndentingNewLine]", 
+         RowBox[{"(*", 
+          RowBox[{
+           RowBox[{"punkt", " ", "bie\:017c\:0105cy"}], " ", "\[Rule]", " ", 
+           RowBox[{"ostatni", " ", "najlepszy", " ", "punkt"}]}], "*)"}], 
+         "\[IndentingNewLine]", 
+         RowBox[{"x0", "=", 
+          RowBox[{"bestPoints", "\[LeftDoubleBracket]", 
+           RowBox[{"-", "1"}], "\[RightDoubleBracket]"}]}], ";", 
+         "\[IndentingNewLine]", "\[IndentingNewLine]", 
+         RowBox[{"(*", 
+          RowBox[{
+           RowBox[{"suma", " ", "jako\:015bci"}], " ", "=", " ", 
+           RowBox[{
+           "0", " ", "w", " ", "danym", " ", "powt\[OAcute]rzeniu", " ", 
+            "symulowanego", " ", "wy\:017carzania"}]}], "*)"}], 
+         "\[IndentingNewLine]", 
+         RowBox[{"values", "=", "0"}], ";", "\[IndentingNewLine]", 
+         RowBox[{"While", "[", 
+          RowBox[{
+           RowBox[{"i", "<", "iterations"}], ",", "\[IndentingNewLine]", 
+           "\[IndentingNewLine]", 
+           RowBox[{"(*", 
+            RowBox[{"wygenerowanie", " ", "s\:0105siedztwa"}], " ", "*)"}], 
+           "\[IndentingNewLine]", 
+           RowBox[{
+            RowBox[{"neighborhood", "=", 
+             RowBox[{"RandomPoint", "[", 
+              RowBox[{
+               RowBox[{"Rectangle", "[", 
+                RowBox[{
+                 RowBox[{"x0", "-", "e"}], ",", 
+                 RowBox[{"x0", "+", "e"}]}], "]"}], ",", "numberOfPoints"}], 
+              "]"}]}], ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+            RowBox[{"(*", 
+             RowBox[{
+             "obliczenie", " ", "jako\:015bci", " ", "dla", " ", "wszystkich",
+               " ", "punkt\[OAcute]w", " ", "w", " ", "sasiedztwie"}], "*)"}],
+             "\[IndentingNewLine]", 
+            RowBox[{"valueNeighborhood", " ", "=", " ", 
+             RowBox[{"Table", "[", 
+              RowBox[{
+               RowBox[{"f", "[", 
+                RowBox[{
+                 RowBox[{"neighborhood", "\[LeftDoubleBracket]", 
+                  RowBox[{"i", ",", "1"}], "\[RightDoubleBracket]"}], ",", 
+                 RowBox[{"neighborhood", "\[LeftDoubleBracket]", 
+                  RowBox[{"i", ",", "2"}], "\[RightDoubleBracket]"}]}], "]"}],
+                ",", 
+               RowBox[{"{", 
+                RowBox[{"i", ",", "1", ",", "numberOfPoints"}], "}"}]}], 
+              "]"}]}], ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+            RowBox[{"(*", 
+             RowBox[{
+             "znalezienie", " ", "optymalnego", " ", "punktu", " ", 
+              "bie\:017c\:0105cego", " ", "i", " ", "jego", " ", "indeksu"}], 
+             "*)"}], "\[IndentingNewLine]", 
+            RowBox[{"indexOfMin", " ", "=", " ", 
+             RowBox[{"Position", "[", 
+              RowBox[{"valueNeighborhood", ",", " ", 
+               RowBox[{"Min", "[", "valueNeighborhood", "]"}]}], "]"}]}], ";",
+             "\[IndentingNewLine]", 
+            RowBox[{"(*", " ", 
+             RowBox[{"policzenie", " ", "energii", " ", "cz\:0105teczki"}], 
+             " ", "*)"}], "\[IndentingNewLine]", 
+            RowBox[{"energyOfTheParticle", " ", "=", " ", 
+             RowBox[{
+              RowBox[{"f", "[", 
+               RowBox[{
+                RowBox[{"neighborhood", "\[LeftDoubleBracket]", 
+                 RowBox[{
+                  RowBox[{"indexOfMin", "\[LeftDoubleBracket]", 
+                   RowBox[{"1", ",", "1"}], "\[RightDoubleBracket]"}], ",", 
+                  "1"}], "\[RightDoubleBracket]"}], ",", 
+                RowBox[{"neighborhood", "\[LeftDoubleBracket]", 
+                 RowBox[{
+                  RowBox[{"indexOfMin", "\[LeftDoubleBracket]", 
+                   RowBox[{"1", ",", "1"}], "\[RightDoubleBracket]"}], ",", 
+                  "2"}], "\[RightDoubleBracket]"}]}], "]"}], "-", 
+              RowBox[{"f", "[", 
+               RowBox[{
+                RowBox[{
+                "x0", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], 
+                ",", 
+                RowBox[{
+                "x0", "\[LeftDoubleBracket]", "2", 
+                 "\[RightDoubleBracket]"}]}], "]"}]}]}], ";", 
+            "\[IndentingNewLine]", "\[IndentingNewLine]", 
+            RowBox[{"(*", 
+             RowBox[{
+              RowBox[{
+              "je\:015bli", " ", "warto\:015b\[CAcute]", " ", 
+               "cz\:0105steczki", " ", "jest", " ", "mniejsza", " ", "od", 
+               " ", "0"}], ",", " ", 
+              RowBox[{
+              "to", " ", "przypisujemy", " ", "do", " ", "punktu", " ", 
+               "bie\:017c\:0105cego", " ", "najlepszy", " ", "punkt", " ", 
+               "z", " ", "s\:0105siedztwa"}]}], "*)"}], "\[IndentingNewLine]", 
+            RowBox[{"If", "[", 
+             RowBox[{
+              RowBox[{"energyOfTheParticle", "<", "0"}], ",", 
+              "\[IndentingNewLine]", 
+              RowBox[{
+               RowBox[{"x0", " ", "=", " ", 
+                RowBox[{"neighborhood", "\[LeftDoubleBracket]", 
+                 RowBox[{"indexOfMin", "\[LeftDoubleBracket]", 
+                  RowBox[{"1", ",", "1"}], "\[RightDoubleBracket]"}], 
+                 "\[RightDoubleBracket]"}]}], ";", "\[IndentingNewLine]", 
+               RowBox[{"(*", 
+                RowBox[{
+                 RowBox[{
+                 "je\:015bli", " ", "jako\:015b\[CAcute]", " ", "najlepszego",
+                   " ", "punktu", " ", "jest", " ", "wi\:0119ksza", " ", "od",
+                   " ", "najmniejszej", " ", "jako\:015bci", " ", "z", " ", 
+                  "wygenerowanego", " ", "s\:0105siedztwa"}], " ", "-", " ", 
+                 RowBox[{
+                 "przypisanie", " ", "go", " ", "do", " ", "najlepszej", " ", 
+                  "jako\:015bci", " ", "oraz", " ", "odpowiedniego", " ", 
+                  "punktu", " ", "do", " ", "najlepszego"}]}], "*)"}], 
+               "\[IndentingNewLine]", 
+               RowBox[{"If", "[", 
+                RowBox[{
+                 RowBox[{
+                  RowBox[{"valueNeighborhood", "\[LeftDoubleBracket]", 
+                   RowBox[{"indexOfMin", "\[LeftDoubleBracket]", 
+                    RowBox[{"1", ",", "1"}], "\[RightDoubleBracket]"}], 
+                   "\[RightDoubleBracket]"}], "<", " ", 
+                  RowBox[{"f", "[", 
+                   RowBox[{
+                    RowBox[{
+                    "bestPoint", "\[LeftDoubleBracket]", "1", 
+                    "\[RightDoubleBracket]"}], ",", 
+                    RowBox[{
+                    "bestPoint", "\[LeftDoubleBracket]", "2", 
+                    "\[RightDoubleBracket]"}]}], "]"}]}], ",", 
+                 "\[IndentingNewLine]", 
+                 RowBox[{
+                  RowBox[{"bestPoint", " ", "=", " ", 
+                   RowBox[{"neighborhood", "\[LeftDoubleBracket]", 
+                    RowBox[{"indexOfMin", "\[LeftDoubleBracket]", 
+                    RowBox[{"1", ",", "1"}], "\[RightDoubleBracket]"}], 
+                    "\[RightDoubleBracket]"}]}], ";", "\[IndentingNewLine]", 
+                  RowBox[{"(*", 
+                   RowBox[{
+                   "przypisanie", " ", "najlepszego", " ", "punktu", " ", 
+                    "jako", " ", "punktu", " ", "bie\:017c\:0105cego"}], 
+                   "*)"}], "\[IndentingNewLine]", 
+                  RowBox[{"x0", "=", "bestPoint"}], ";", 
+                  "\[IndentingNewLine]", 
+                  RowBox[{"bestValue", "=", 
+                   RowBox[{"f", "[", 
+                    RowBox[{
+                    RowBox[{
+                    "bestPoint", "\[LeftDoubleBracket]", "1", 
+                    "\[RightDoubleBracket]"}], ",", 
+                    RowBox[{
+                    "bestPoint", "\[LeftDoubleBracket]", "2", 
+                    "\[RightDoubleBracket]"}]}], "]"}]}]}]}], 
+                "\[IndentingNewLine]", "]"}], ";"}], ",", 
+              "\[IndentingNewLine]", 
+              RowBox[{"(*", " ", 
+               RowBox[{
+                RowBox[{
+                "je\:015bli", " ", "warto\:015b\[CAcute]", " ", 
+                 "cz\:0105steczki", " ", "nie", " ", "jest", " ", "mniejsza", 
+                 " ", "od", " ", "0"}], ",", " ", 
+                RowBox[{
+                "to", " ", "losujemy", " ", "liczb\:0119", " ", 
+                 "pseudolosow\:0105", " ", "o", " ", "rozk\[LSlash]adzie", 
+                 " ", "r\[OAcute]wnomiernym", " ", "o", " ", "przedziale", 
+                 " ", 
+                 RowBox[{"(", 
+                  RowBox[{"0", ",", "1"}], ")"}]}]}], "*)"}], 
+              "\[IndentingNewLine]", 
+              RowBox[{
+               RowBox[{"random", "  ", "=", " ", 
+                RowBox[{"RandomReal", "[", 
+                 RowBox[{"{", 
+                  RowBox[{"0", ",", "1"}], "}"}], "]"}]}], ";", 
+               "\[IndentingNewLine]", 
+               RowBox[{"(*", 
+                RowBox[{
+                "je\:015bli", " ", "wylosowana", " ", "liczba", " ", "jest", 
+                 " ", "mniejsza", " ", "od", " ", "funkcji", " ", 
+                 "eksponencjalnej", " ", "to", " ", "punktem", " ", 
+                 "bie\:017c\:0105cym", " ", "jest", " ", "punkt", " ", "z", 
+                 " ", "s\:0105siedztwa", " ", "o", " ", "najmniejszej", " ", 
+                 "jako\:015bci"}], " ", "*)"}], "\[IndentingNewLine]", 
+               RowBox[{"If", "[", 
+                RowBox[{
+                 RowBox[{"random", " ", "<", " ", 
+                  RowBox[{"Exp", "[", 
+                   RowBox[{"-", 
+                    RowBox[{"(", 
+                    RowBox[{"energyOfTheParticle", "/", "temp"}], ")"}]}], 
+                   "]"}]}], ",", "\[IndentingNewLine]", 
+                 RowBox[{
+                  RowBox[{"x0", "=", " ", 
+                   RowBox[{"neighborhood", "\[LeftDoubleBracket]", 
+                    RowBox[{"indexOfMin", "\[LeftDoubleBracket]", 
+                    RowBox[{"1", ",", "1"}], "\[RightDoubleBracket]"}], 
+                    "\[RightDoubleBracket]"}]}], ";"}]}], 
+                "\[IndentingNewLine]", "]"}], ";"}]}], "\[IndentingNewLine]", 
+             "]"}], ";", "\[IndentingNewLine]", 
+            RowBox[{"(*", 
+             RowBox[{
+             "sumowanie", " ", "najlepszej", " ", "jako\:015bci", " ", "z", 
+              " ", "ka\:017cdej", " ", "iteracji"}], "*)"}], 
+            "\[IndentingNewLine]", 
+            RowBox[{"values", "=", 
+             RowBox[{"values", "+", "bestValue"}]}], ";", 
+            "\[IndentingNewLine]", "\[IndentingNewLine]", 
+            RowBox[{"i", "++"}], ";"}]}], "\[IndentingNewLine]", "]"}], ";", 
+         "\[IndentingNewLine]", 
+         RowBox[{"(*", 
+          RowBox[{
+           RowBox[{
+           "dodanie", " ", "odpowiednich", " ", "warto\:015bci", " ", "do", 
+            " ", "list"}], ",", " ", 
+           RowBox[{"czyli", " ", "najlepszy", " ", "punkt"}], ",", " ", 
+           RowBox[{"najlepsza", " ", "jako\:015b\[CAcute]"}], ",", " ", 
+           RowBox[{
+           "\:015brednia", " ", "jako\:015bci", " ", "wszystkich", " ", 
+            "punkt\[OAcute]w", " ", "w", " ", "s\:0105siedztwie"}]}], "*)"}], 
+         "\[IndentingNewLine]", 
+         RowBox[{"bestPoints", "=", 
+          RowBox[{"Append", "[", 
+           RowBox[{"bestPoints", ",", "bestPoint"}], "]"}]}], ";", 
+         "\[IndentingNewLine]", 
+         RowBox[{"bestValues", " ", "=", " ", 
+          RowBox[{"Append", "[", 
+           RowBox[{"bestValues", ",", " ", "bestValue"}], "]"}]}], ";", 
+         "\[IndentingNewLine]", 
+         RowBox[{"means", "=", 
+          RowBox[{"Append", "[", 
+           RowBox[{"means", ",", 
+            RowBox[{"values", "/", "i"}]}], "]"}]}], ";", 
+         RowBox[{"(*", 
+          RowBox[{
+          "podzielenie", " ", "przez", " ", "liczb\:0119", " ", "iteracji", 
+           " ", "sum\:0119", " ", "najlepszych", " ", "jako\:015bci"}], 
+          "*)"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
+         "\[IndentingNewLine]", 
+         RowBox[{"(*", 
+          RowBox[{"obni\:017cenie", " ", "temperatury"}], "*)"}], 
+         "\[IndentingNewLine]", 
+         RowBox[{"temp", "=", 
+          RowBox[{"\[Alpha]", "[", "temp", "]"}]}], ";", 
+         "\[IndentingNewLine]", "\[IndentingNewLine]", 
+         RowBox[{"j", "++"}], ";"}]}], "\[IndentingNewLine]", "]"}], ";", 
+      "\[IndentingNewLine]", "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{
+       "zwr\[OAcute]cenie", " ", "potrzebnych", " ", "warto\:015bci"}], " ", 
+       "*)"}], "\[IndentingNewLine]", 
+      RowBox[{"Return", "[", 
+       RowBox[{"{", 
+        RowBox[{
+        "bestPoint", ",", "bestValue", " ", ",", "bestValues", ",", "means", 
+         ",", "bestPoints", ",", "f", ",", "xmin", ",", "xmax", ",", "ymin", 
+         ",", "ymax", ",", "j"}], "}"}], "]"}], ";"}]}], 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", "]"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.8906510963527946`*^9, 3.8906512753383155`*^9}, {
+   3.8906514325181828`*^9, 3.89065146748169*^9}, 3.890651511005122*^9, {
+   3.8906516144207797`*^9, 3.8906516979602203`*^9}, {3.890651741502089*^9, 
+   3.890651757563694*^9}, {3.8906539400285015`*^9, 3.890653947254101*^9}, {
+   3.8906543077536745`*^9, 3.890654316537468*^9}, {3.8906544482802043`*^9, 
+   3.8906544986280813`*^9}, {3.890654800688407*^9, 3.8906549110583315`*^9}, {
+   3.890655159724778*^9, 3.8906552483136063`*^9}, {3.890655467338669*^9, 
+   3.8906554820047846`*^9}, {3.8906556132520847`*^9, 
+   3.8906556357993984`*^9}, {3.8906557049215946`*^9, 
+   3.8906558507081766`*^9}, {3.8906559796412992`*^9, 
+   3.8906559857718687`*^9}, {3.890656023768324*^9, 3.8906560369726515`*^9}, {
+   3.8906560857883835`*^9, 3.8906561096719246`*^9}, 3.890656219492649*^9, {
+   3.8906565959668655`*^9, 3.8906566248083797`*^9}, {3.8906566852680006`*^9, 
+   3.890656707646858*^9}, 3.8906567403383274`*^9, {3.8906580045283513`*^9, 
+   3.890658096462181*^9}, {3.8906592672622137`*^9, 3.890659294732353*^9}, {
+   3.8906638207961917`*^9, 3.8906638339115562`*^9}, {3.8906638695775814`*^9, 
+   3.890663871471305*^9}, {3.8906639077501707`*^9, 3.8906639114960117`*^9}, {
+   3.890664468355541*^9, 3.890664472796633*^9}, {3.890664524134977*^9, 
+   3.890664539889261*^9}, 3.8906645799517307`*^9, {3.8906646122243633`*^9, 
+   3.8906646358351984`*^9}, {3.8906648341550303`*^9, 3.890664899114071*^9}, {
+   3.8906650352342463`*^9, 3.8906650376740513`*^9}, {3.890665214375888*^9, 
+   3.8906652220459175`*^9}, {3.890665281308284*^9, 3.8906652822121744`*^9}, {
+   3.8906654941257563`*^9, 3.8906655080269203`*^9}, {3.890665561005106*^9, 
+   3.890665625183868*^9}, {3.890665813839997*^9, 3.8906658141575513`*^9}, {
+   3.890666035590588*^9, 3.8906660425588665`*^9}, {3.890666091315753*^9, 
+   3.890666096238855*^9}, {3.8906664113489156`*^9, 3.890666616361161*^9}, {
+   3.890666699553115*^9, 3.890666704404247*^9}, {3.8906667412605386`*^9, 
+   3.890666767847011*^9}, {3.890666804254476*^9, 3.890666805025386*^9}, {
+   3.8906668454761553`*^9, 3.8906668766484675`*^9}, {3.8906669184998784`*^9, 
+   3.890666927154516*^9}, {3.890666965297395*^9, 3.8906670547467327`*^9}},
+ CellLabel->"In[25]:=",ExpressionUUID->"837acd29-1056-41b7-ab95-f8c02fbacc3b"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+3. Przetestuj procedury na funkcjach testowych (zgodnie z zasadami omawianymi \
+w module 1) nie zapominaj\:0105c o funkcjach wielomodalnych.
+Por\[OAcute]wnaj i zinterpretuj wyniki.\
+\>", "Subtitle",
+ CellChangeTimes->{{3.889501080161211*^9, 
+  3.889501080993334*^9}},ExpressionUUID->"2062b079-4c9b-4249-99b3-\
+aa5d655bae9f"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"SphericFunction2D", "[", 
+    RowBox[{"x_", ",", "y_"}], "]"}], ":=", 
+   RowBox[{
+    RowBox[{"x", "^", "2"}], "+", 
+    RowBox[{"y", "^", "2"}]}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"RastriginFunction2D", "[", 
+    RowBox[{"x_", ",", "y_"}], "]"}], ":=", 
+   RowBox[{
+    RowBox[{"x", "^", "2"}], "-", 
+    RowBox[{"Cos", "[", 
+     RowBox[{"18", "*", "x"}], "]"}], "+", 
+    RowBox[{"y", "^", "2"}], "-", 
+    RowBox[{"Cos", "[", 
+     RowBox[{"18", "*", "y"}], "]"}]}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"AckleyFunction2D", "[", 
+    RowBox[{"x_", ",", "y_"}], "]"}], ":=", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"-", "20"}], "*", 
+     RowBox[{"Exp", "[", 
+      RowBox[{
+       RowBox[{"-", "0.2"}], "*", 
+       SqrtBox[
+        RowBox[{
+         RowBox[{"1", "/", "2"}], "*", 
+         RowBox[{"(", 
+          RowBox[{
+           RowBox[{"x", "^", "2"}], "+", 
+           RowBox[{"y", "^", "2"}]}], ")"}]}]]}], "]"}]}], "-", 
+    RowBox[{"Exp", "[", 
+     RowBox[{
+      RowBox[{"1", "/", "2"}], "*", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"Cos", "[", 
+         RowBox[{"2", "*", "Pi", "*", "x"}], "]"}], "+", 
+        RowBox[{"Cos", "[", 
+         RowBox[{"2", "*", "Pi", "*", "y"}], "]"}]}], ")"}]}], "]"}], "+", 
+    "20", "+", "\[ExponentialE]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"RosenbrockFunction2D", "[", 
+    RowBox[{"x_", ",", "y_"}], "]"}], ":=", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"(", 
+      RowBox[{"1", "-", "x"}], ")"}], "^", "2"}], "+", 
+    RowBox[{"100", 
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{"y", "-", 
+        RowBox[{"x", "^", "2"}]}], ")"}], "^", "2"}]}]}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"HimmelblauFunction2D", "[", 
+    RowBox[{"x_", ",", "y_"}], "]"}], ":=", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"(", 
+      RowBox[{
+       RowBox[{"x", "^", "2"}], "+", "y", "-", "11"}], ")"}], "^", "2"}], "+", 
+    RowBox[{
+     RowBox[{"(", 
+      RowBox[{"x", "+", 
+       RowBox[{"y", "^", "2"}], "-", "7"}], ")"}], "^", "2"}]}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"BealeFunction2D", "[", 
+    RowBox[{"x_", ",", "y_"}], "]"}], ":=", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"(", 
+      RowBox[{"1.5", "-", "x", "+", 
+       RowBox[{"x", "*", "y"}]}], ")"}], "^", "2"}], "+", 
+    RowBox[{
+     RowBox[{"(", 
+      RowBox[{"2.25", "-", "x", "+", 
+       RowBox[{"x", "*", 
+        RowBox[{"y", "^", "2"}]}]}], ")"}], "^", "2"}], "+", 
+    RowBox[{
+     RowBox[{"(", 
+      RowBox[{"2.625", "-", "x", "+", 
+       RowBox[{"x", " ", 
+        RowBox[{"y", "^", "3"}]}]}], ")"}], "^", "2"}]}]}], 
+  ";"}], "\[IndentingNewLine]"}], "Input",
+ CellChangeTimes->{{3.8906500957310743`*^9, 3.8906501608593583`*^9}},
+ CellLabel->"In[7]:=",ExpressionUUID->"5075ccb0-daca-47ab-b1e4-70fbd59d04fe"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"dzialanieHeurystyki", "[", "algorithm_", "]"}], ":=", 
+  RowBox[{"Module", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{
+     "bestPointOverall", ",", "bestValueOverall", ",", "results", ",", 
+      "means", ",", "locations", ",", "animation", ",", "optimum", ",", 
+      "resultsPlot", ",", "meansPlot", ",", "xmin", ",", "xmax", ",", "ymin", 
+      ",", "ymax", ",", "function", ",", "iterations"}], "}"}], ",", 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+       "bestPointOverall", ",", "bestValueOverall", ",", "results", ",", 
+        "means", ",", "locations", ",", "function", ",", "xmin", ",", "xmax", 
+        ",", "ymin", ",", "ymax", ",", "iterations"}], "}"}], "=", 
+      "algorithm"}], ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+     RowBox[{"(*", " ", 
+      RowBox[{"znalezione", " ", 
+       RowBox[{"optimum", "\\", "small"}], 
+       RowBox[{"{", 
+        RowBox[{"x_", 
+         RowBox[{"{", "max", "}"}]}], "}"}], " ", "oraz", " ", 
+       "warto\:015b\[CAcute]", " ", "funkcji", " ", "celu", " ", "w", " ", 
+       "tym", " ", "punkcie"}], "*)"}], "\[IndentingNewLine]", 
+     RowBox[{"optimum", "=", 
+      RowBox[{"StringJoin", "[", 
+       RowBox[{"\"\<fMin(\>\"", ",", 
+        RowBox[{"ToString", "[", 
+         RowBox[{
+         "bestPointOverall", "\[LeftDoubleBracket]", "1", 
+          "\[RightDoubleBracket]"}], "]"}], ",", "\"\<, \>\"", ",", 
+        RowBox[{"ToString", "[", 
+         RowBox[{
+         "bestPointOverall", "\[LeftDoubleBracket]", "2", 
+          "\[RightDoubleBracket]"}], "]"}], ",", "\"\<)=\>\"", ",", 
+        RowBox[{"ToString", "[", "bestValueOverall", "]"}]}], "]"}]}], ";", 
+     "\[IndentingNewLine]", "\[IndentingNewLine]", 
+     RowBox[{"(*", " ", 
+      RowBox[{
+      "przebieg", " ", "warto\:015bci", " ", "optymalnej", " ", "w", " ", 
+       "kolejnych", " ", 
+       RowBox[{"iteracjach", "\\", "small"}], 
+       RowBox[{"{", 
+        RowBox[{"x_", 
+         RowBox[{"{", 
+          RowBox[{"best", ",", "i"}], "}"}]}], "}"}]}], " ", "*)"}], 
+     "\[IndentingNewLine]", 
+     RowBox[{"resultsPlot", "=", 
+      RowBox[{"ListPlot", "[", 
+       RowBox[{"results", ",", 
+        RowBox[{"PlotStyle", "\[Rule]", 
+         RowBox[{"{", "Purple", "}"}]}], ",", 
+        RowBox[{"AxesLabel", "\[Rule]", 
+         RowBox[{"{", 
+          RowBox[{
+          "\"\<ilo\:015b\[CAcute] iteracji\>\"", ",", 
+           "\"\<warto\:015b\[CAcute]\>\""}], "}"}]}], ",", " ", 
+        RowBox[{
+        "PlotLabel", "\[Rule]", "\"\<przebieg \[CapitalPhi](xBest)\>\""}], 
+        ",", 
+        RowBox[{"ImageSize", "\[Rule]", "400"}]}], " ", "]"}]}], ";", 
+     "\[IndentingNewLine]", "\[IndentingNewLine]", 
+     RowBox[{"(*", " ", 
+      RowBox[{"przebieg", " ", "warto\:015bci", " ", "\:015bredniej", " ", 
+       RowBox[{"(", 
+        RowBox[{"w", " ", "populacji"}], ")"}], " ", "w", " ", "kolejnych", 
+       " ", 
+       RowBox[{"iteracjach", "\\", "small"}], 
+       RowBox[{"{", 
+        RowBox[{"x_", 
+         RowBox[{"{", 
+          RowBox[{"av", ",", "i"}], "}"}]}], "}"}]}], " ", "*)"}], 
+     "\[IndentingNewLine]", 
+     RowBox[{"meansPlot", "=", 
+      RowBox[{"ListLinePlot", "[", 
+       RowBox[{"means", ",", 
+        RowBox[{"PlotStyle", "\[Rule]", 
+         RowBox[{"{", 
+          RowBox[{"Purple", ",", "Thick"}], "}"}]}], ",", 
+        RowBox[{"AxesLabel", "\[Rule]", 
+         RowBox[{"{", 
+          RowBox[{
+          "\"\<ilo\:015b\[CAcute] iteracji\>\"", ",", 
+           "\"\<\:015brednia warto\:015b\[CAcute]\>\""}], "}"}]}], ",", 
+        RowBox[{
+        "PlotLabel", "\[Rule]", 
+         "\"\<przebieg \[CapitalPhi] \:015brednie w iteracji\>\""}], " ", ",", 
+        RowBox[{"ImageSize", "\[Rule]", "400"}]}], "]"}]}], ";", 
+     "\[IndentingNewLine]", 
+     RowBox[{"(*", " ", 
+      RowBox[{"ruch", " ", 
+       RowBox[{"punktu", "\\", "small"}], 
+       RowBox[{"{", 
+        RowBox[{"x_", 
+         RowBox[{"{", 
+          RowBox[{"best", ",", "i"}], "}"}]}], "}"}], " ", "na", " ", 
+       "p\[LSlash]aszczy\:017anie", " ", 
+       RowBox[{"(", 
+        RowBox[{"dla", " ", "problem\[OAcute]w", " ", "2", "D"}], ")"}]}], 
+      " ", "*)"}], "\[IndentingNewLine]", 
+     RowBox[{"animation", "=", 
+      RowBox[{"Animate", "[", 
+       RowBox[{
+        RowBox[{"Module", "[", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"currentLocation", "=", 
+             RowBox[{
+             "locations", "\[LeftDoubleBracket]", "j", 
+              "\[RightDoubleBracket]"}]}], ",", 
+            RowBox[{"from", "=", 
+             RowBox[{"locations", "\[LeftDoubleBracket]", 
+              RowBox[{"1", ";;", 
+               RowBox[{"j", "-", "1"}]}], "\[RightDoubleBracket]"}]}], ",", 
+            RowBox[{"to", "=", 
+             RowBox[{"locations", "[", 
+              RowBox[{"[", 
+               RowBox[{"2", ";;", "j"}], "]"}], "]"}]}]}], "}"}], ",", 
+          RowBox[{"DensityPlot", "[", 
+           RowBox[{
+            RowBox[{"function", "[", 
+             RowBox[{"x", ",", "y"}], "]"}], ",", 
+            RowBox[{"{", 
+             RowBox[{"x", ",", "xmin", ",", "xmax"}], "}"}], ",", 
+            RowBox[{"{", 
+             RowBox[{"y", ",", "ymin", ",", "ymax"}], "}"}], ",", 
+            RowBox[{"Epilog", "\[Rule]", 
+             RowBox[{"{", 
+              RowBox[{"Red", ",", 
+               RowBox[{"PointSize", "[", "Large", "]"}], ",", 
+               RowBox[{"Point", "[", "currentLocation", "]"}], ",", "Thick", 
+               ",", 
+               RowBox[{"Line", "[", 
+                RowBox[{"Transpose", "[", 
+                 RowBox[{"{", 
+                  RowBox[{"from", ",", "to"}], "}"}], "]"}], "]"}], ",", 
+               "Thin", ",", 
+               RowBox[{"Line", "[", 
+                RowBox[{"Transpose", "[", 
+                 RowBox[{"{", 
+                  RowBox[{
+                   RowBox[{"locations", "\[LeftDoubleBracket]", 
+                    RowBox[{"1", ";;", 
+                    RowBox[{"j", "-", "1"}]}], "\[RightDoubleBracket]"}], ",", 
+                   RowBox[{"locations", "\[LeftDoubleBracket]", 
+                    RowBox[{"2", ";;", "j"}], "\[RightDoubleBracket]"}]}], 
+                  "}"}], "]"}], "]"}]}], "}"}]}]}], "]"}]}], "]"}], ",", 
+        RowBox[{"{", 
+         RowBox[{"j", ",", "1", ",", "iterations", ",", "1"}], "}"}]}], 
+       "]"}]}], ";", "\[IndentingNewLine]", 
+     RowBox[{"Print", "[", 
+      RowBox[{"Grid", "[", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{"optimum", ",", "resultsPlot"}], "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{"meansPlot", ",", "animation"}], "}"}]}], "}"}], ",", 
+        RowBox[{"Frame", "\[Rule]", "All"}], ",", 
+        RowBox[{"Alignment", "\[Rule]", "Left"}], ",", 
+        RowBox[{"ItemSize", "\[Rule]", 
+         RowBox[{"{", 
+          RowBox[{"36", ",", "25"}], "}"}]}]}], "]"}], "]"}], ";"}]}], 
+   "\[IndentingNewLine]", "]"}]}]], "Input",
+ CellChangeTimes->{3.890650216234357*^9, 3.890656562594487*^9},
+ CellLabel->"In[13]:=",ExpressionUUID->"68ef5ac8-bc61-419d-85bf-dcd1657cadbc"],
+
+Cell["-> funkcja sferyczna", "Text",
+ CellChangeTimes->{{3.890663063615061*^9, 
+  3.890663067263939*^9}},ExpressionUUID->"2d95f01e-c386-4e1e-ac8d-\
+9be863b99172"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"dzialanieHeurystyki", "[", 
+  RowBox[{"Metropolis", "[", 
+   RowBox[{"SphericFunction2D", ",", 
+    RowBox[{"-", "5"}], ",", "5", ",", 
+    RowBox[{"-", "5"}], ",", "5", ",", "500", ",", "50", ",", "5", ",", "0.1",
+     ",", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"RandomReal", "[", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"-", "5"}], ",", "5"}], "}"}], "]"}], ",", 
+      RowBox[{"RandomReal", "[", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"-", "5"}], ",", "5"}], "}"}], "]"}]}], "}"}]}], "]"}], 
+  "]"}]], "Input",
+ CellChangeTimes->{{3.890650219488104*^9, 3.890650226211659*^9}, {
+  3.890650279561393*^9, 3.890650298523343*^9}},
+ CellLabel->"In[14]:=",ExpressionUUID->"a4099ef6-e0ec-4f56-9b7a-f51b1948551d"],
+
+Cell[BoxData[
+ TagBox[GridBox[{
+    {"\<\"fMin(1.09955, -0.727848)=1.73877\"\>", 
+     GraphicsBox[{{}, 
+       {RGBColor[0.5, 0, 0.5], PointSize[0.011000000000000001`], 
+        AbsoluteThickness[1.6], PointBox[CompressedData["
+1:eJxdyVtI0wEUx/E1E8w1TZ02ps5N1zQ3azqdTpf7uXmZw0tYtBFG4SosMEMC
+Rawta2g3JxQWWj5ENoNahTUMH0JbSFs9lEKzoGSDKB21B8VMiArP/6UDh8Pn
+fMVNrQ1H2CwWS/l3/931CWufnFuo7TYUgh7QjB023htWkaPQ/M05HL+N8RZs
+Ppnpjh0qIPPg+cjRPLAy5iNG+OaW9X4+OQURraff504oySIUNDvniooZp+N5
+34Zgy3IeWQLD4OSquJmxFMc72R0jX3LJWXA412IfLyrI2Thq+T0VsDKWg3NZ
++rUunvEONNRPj/Xod5IV6Fuy9KbW5ZBz0R/n5Ym9MnIeROJPU5pExkoEfB+6
+Mlq2k/PRH2mx1jqyyAXw/Lyzx7aaSVb950KEnmU3HRuQkoswfyBm5bNfQlbD
+5bK4+b4McjHazijO2u3p5BLMGC8NmmsYa+C9cmF+X1BE3oUeU0zCkDqNXIrO
+vY6OE3dTyVrM+H0hy3QKGUg6mL5yaDl53TZgNjut86ZUQL0Mr9wmobmPT70M
+1+RBjUpJZunwS75for6xlboO/hHzy03tSdT1UN1+1LJ0ikddD26oN9A4nkC9
+HN2KxteTINvKsdQu8w5FxFOvwO7zT41hXRz1CiSOCsc9hljqlehyXWRzo7nU
+K2FbtLfxczjUq/BC+73eXxJNvQpvr5rmBKVR1A3w+n84R9WR1A2YTb6+IJhg
+U6+Gv2bjQ5+MRb0aWcvtYfa7Ne0fX7fM8g==
+         "]]}, {{}, {}}},
+      AspectRatio->NCache[GoldenRatio^(-1), 0.6180339887498948],
+      Axes->{True, True},
+      AxesLabel->{
+        FormBox["\"ilo\:015b\[CAcute] iteracji\"", TraditionalForm], 
+        FormBox["\"warto\:015b\[CAcute]\"", TraditionalForm]},
+      AxesOrigin->{0., 0},
+      DisplayFunction->Identity,
+      Frame->{{False, False}, {False, False}},
+      FrameLabel->{{None, None}, {None, None}},
+      FrameTicks->{{Automatic, Automatic}, {Automatic, Automatic}},
+      GridLines->{None, None},
+      GridLinesStyle->Directive[
+        GrayLevel[0.5, 0.4]],
+      ImageSize->400,
+      Method->{
+       "OptimizePlotMarkers" -> True, "OptimizePlotMarkers" -> True, 
+        "CoordinatesToolOptions" -> {"DisplayFunction" -> ({
+            Identity[
+             Part[#, 1]], 
+            Identity[
+             Part[#, 2]]}& ), "CopiedValueFunction" -> ({
+            Identity[
+             Part[#, 1]], 
+            Identity[
+             Part[#, 2]]}& )}},
+      PlotLabel->FormBox["\"przebieg \[CapitalPhi](xBest)\"", TraditionalForm],
+      PlotRange->{{0., 51.}, {0, 23.283238286737927`}},
+      PlotRangeClipping->True,
+      PlotRangePadding->{{
+         Scaled[0.02], 
+         Scaled[0.02]}, {
+         Scaled[0.02], 
+         Scaled[0.05]}},
+      Ticks->{Automatic, Automatic}]},
+    {
+     GraphicsBox[{{}, {{}, {}, 
+        {RGBColor[0.5, 0, 0.5], PointSize[
+          NCache[
+           Rational[1, 60], 0.016666666666666666`]], Thickness[Large], 
+         LineBox[CompressedData["
+1:eJw1yWtIkwEUxvG30Wpka86ms2zq5mxrzE03p6apj25za4VYVKgkRSKUmhZ9
+yIRIq2lkrpuVIq1IApXSMFZgg5ZZ7UOoSWAyDIsou5iWCbaaXfC8Bw6H3/lL
+91RuLeEwDKP7t//vwkxnKhZVC/VVyaAHHgTqXYuHksg8WE6fEp8dMZCDYRuI
+M8b8ZC3C/Q+F3VW1rMOhXRLqro1KJK/B9bmbbeXNenI0evu9g6MW1jJ40vJ7
+G106shyGYsN0yCTrteC2mq6NvkwgK3GrTKJ8NhNPVgE/EioEF1mrYXRM5Z5b
+yloD+xjHJ/RpyPH4NCEpVkjjyAkIRAofzZeoyTqcrO1SFw2ryHqkWr58rHu9
+jpyIfNm3Xu8NJdkAbstxf1c36yRc5ZVPRW9inYxgrSZp+0AsOQWTGQe8h+/K
+yevR9sIxa7bHkFNxR+KaOqpmnYbPKRyPWCojb8Dtms37ZJ3R5HR4vW/PN7gj
+yRl4V3N5LrCCdSYqccbdWCchA30ep3rbzogF1wCdsv3VDatWU8/C7jznvdC+
+cOpZ+GUr2NLyncxkw1ak0trrxdSzsetrx9MntjDqRuw98vsxf0ZE3YiKVx3y
+h3lkxoQTBZfQ2hRC3QTVbI9yzEFmzNC3XxBFHBJSN6O0oNDPXymgnoPxK2HD
+7w8up54DQWyuO6o/iLoFTDv/2JvmZdQteF7qUAw6eNStmCjz7/iTzqVuRVBP
+xkizk0N9I8atvsGhqvnMv0/zynw=
+          "]]}}, {{}, {}}},
+      AspectRatio->NCache[GoldenRatio^(-1), 0.6180339887498948],
+      Axes->{True, True},
+      AxesLabel->{
+        FormBox["\"ilo\:015b\[CAcute] iteracji\"", TraditionalForm], 
+        FormBox["\"\:015brednia warto\:015b\[CAcute]\"", TraditionalForm]},
+      AxesOrigin->{0., 0},
+      DisplayFunction->Identity,
+      Frame->{{False, False}, {False, False}},
+      FrameLabel->{{None, None}, {None, None}},
+      FrameTicks->{{Automatic, Automatic}, {Automatic, Automatic}},
+      GridLines->{None, None},
+      GridLinesStyle->Directive[
+        GrayLevel[0.5, 0.4]],
+      ImageSize->400,
+      Method->{
+       "OptimizePlotMarkers" -> True, "OptimizePlotMarkers" -> True, 
+        "CoordinatesToolOptions" -> {"DisplayFunction" -> ({
+            Identity[
+             Part[#, 1]], 
+            Identity[
+             Part[#, 2]]}& ), "CopiedValueFunction" -> ({
+            Identity[
+             Part[#, 1]], 
+            Identity[
+             Part[#, 2]]}& )}},
+      PlotLabel->FormBox[
+       "\"przebieg \[CapitalPhi] \:015brednie w iteracji\"", TraditionalForm],
+      PlotRange->{{0., 50.}, {0, 23.469529239927535`}},
+      PlotRangeClipping->True,
+      PlotRangePadding->{{
+         Scaled[0.02], 
+         Scaled[0.02]}, {
+         Scaled[0.02], 
+         Scaled[0.05]}},
+      Ticks->{Automatic, Automatic}], 
+     TagBox[
+      StyleBox[
+       DynamicModuleBox[{$CellContext`j$$ = 36, Typeset`show$$ = True, 
+        Typeset`bookmarkList$$ = {}, Typeset`bookmarkMode$$ = "Menu", 
+        Typeset`animator$$, Typeset`animvar$$ = 1, Typeset`name$$ = 
+        "\"untitled\"", Typeset`specs$$ = {{
+          Hold[$CellContext`j$$], 1, 50, 1}}, Typeset`size$$ = {
+        396.00000000000006`, {196., 200.00000000000006`}}, Typeset`update$$ = 
+        0, Typeset`initDone$$, Typeset`skipInitDone$$ = True}, 
+        DynamicBox[Manipulate`ManipulateBoxes[
+         1, StandardForm, "Variables" :> {$CellContext`j$$ = 1}, 
+          "ControllerVariables" :> {}, 
+          "OtherVariables" :> {
+           Typeset`show$$, Typeset`bookmarkList$$, Typeset`bookmarkMode$$, 
+            Typeset`animator$$, Typeset`animvar$$, Typeset`name$$, 
+            Typeset`specs$$, Typeset`size$$, Typeset`update$$, 
+            Typeset`initDone$$, Typeset`skipInitDone$$}, "Body" :> 
+          Module[{$CellContext`currentLocation$ = 
+             Part[$CellContext`locations$4060, $CellContext`j$$], \
+$CellContext`from$ = Part[$CellContext`locations$4060, 
+               Span[1, $CellContext`j$$ - 1]], $CellContext`to$ = 
+             Part[$CellContext`locations$4060, 
+               Span[2, $CellContext`j$$]]}, 
+            DensityPlot[
+             $CellContext`function$4060[$CellContext`x, $CellContext`y], \
+{$CellContext`x, $CellContext`xmin$4060, $CellContext`xmax$4060}, \
+{$CellContext`y, $CellContext`ymin$4060, $CellContext`ymax$4060}, 
+             Epilog -> {Red, 
+               PointSize[Large], 
+               Point[$CellContext`currentLocation$], Thick, 
+               Line[
+                Transpose[{$CellContext`from$, $CellContext`to$}]], Thin, 
+               Line[
+                Transpose[{
+                  Part[$CellContext`locations$4060, 
+                   Span[1, $CellContext`j$$ - 1]], 
+                  Part[$CellContext`locations$4060, 
+                   Span[2, $CellContext`j$$]]}]]}]], 
+          "Specifications" :> {{$CellContext`j$$, 1, 50, 1, 
+             AppearanceElements -> {
+              "ProgressSlider", "PlayPauseButton", "FasterSlowerButtons", 
+               "DirectionButton"}}}, 
+          "Options" :> {
+           ControlType -> Animator, AppearanceElements -> None, 
+            DefaultBaseStyle -> "Animate", DefaultLabelStyle -> 
+            "AnimateLabel", SynchronousUpdating -> True, ShrinkingDelay -> 
+            10.}, "DefaultOptions" :> {}],
+         ImageSizeCache->{448., {233., 239.}},
+         SingleEvaluation->True],
+        Deinitialization:>None,
+        DynamicModuleValues:>{},
+        SynchronousInitialization->True,
+        UndoTrackedVariables:>{Typeset`show$$, Typeset`bookmarkMode$$},
+        UnsavedVariables:>{Typeset`initDone$$},
+        UntrackedVariables:>{Typeset`size$$}], "Animate",
+       Deployed->True,
+       StripOnInput->False],
+      Manipulate`InterpretManipulate[1]]}
+   },
+   AutoDelete->False,
+   GridBoxAlignment->{"Columns" -> {{Left}}},
+   GridBoxFrame->{"Columns" -> {{True}}, "Rows" -> {{True}}},
+   GridBoxItemSize->{"Columns" -> {{36}}, "Rows" -> {{25}}}],
+  "Grid"]], "Print",
+ CellChangeTimes->{
+  3.8906502482483454`*^9, {3.8906502824699306`*^9, 3.8906502991474657`*^9}, 
+   3.8906504222729545`*^9, {3.890662112586071*^9, 3.890662119761074*^9}, 
+   3.8906621916226864`*^9, 3.8906669043358636`*^9},
+ CellLabel->
+  "During evaluation of \
+In[14]:=",ExpressionUUID->"f563b6c8-e800-45b9-9103-243d12960919"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"dzialanieHeurystyki", "[", 
+  RowBox[{"symulowaneWy\:017carzanie", "[", 
+   RowBox[{"SphericFunction2D", ",", 
+    RowBox[{"-", "5"}], ",", "5", ",", 
+    RowBox[{"-", "5"}], ",", "5", ",", "50", ",", "3", ",", "5", ",", "0.1", 
+    ",", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"RandomReal", "[", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"-", "5"}], ",", "5"}], "}"}], "]"}], ",", 
+      RowBox[{"RandomReal", "[", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"-", "5"}], ",", "5"}], "}"}], "]"}]}], "}"}]}], "]"}], 
+  "]"}]], "Input",
+ CellChangeTimes->{{3.8906553667682486`*^9, 3.8906553793582616`*^9}, {
+  3.890655529466303*^9, 3.8906555297618604`*^9}, {3.8906562949226074`*^9, 
+  3.8906563098466125`*^9}, {3.890656358935168*^9, 3.8906563598123393`*^9}, {
+  3.8906565048323684`*^9, 3.890656504976576*^9}, {3.8906566517197447`*^9, 
+  3.8906566705967607`*^9}},
+ CellLabel->"In[26]:=",ExpressionUUID->"e2af1c96-e3b3-4ff4-bd4c-9aa12a7494d2"],
+
+Cell[BoxData[
+ TagBox[GridBox[{
+    {"\<\"fMin(0.00638356, -0.00066967)=0.0000411983\"\>", 
+     GraphicsBox[{{}, 
+       {RGBColor[0.5, 0, 0.5], PointSize[0.012833333333333334`], 
+        AbsoluteThickness[1.6], PointBox[CompressedData["
+1:eJxTTMoPSmViYGBQB2IQDQEf7PMjJNvbunQcoAIOine42gInaEH5HA6ptldT
+gxg0oHwBh5urTvbs7leG8kUcerbvCXL6oQTlSziw3W2d3OOpAOXLOKhpvX1z
+PUwGyldwCLjeF7bulBiUr+Twb+oj5wn8IlC+ioPjl9qfsZKCUL6aQ8LV3A+K
+77mhfA2H13xq/qbsLFC+lsP7Uu62xf9/20P4Og5PI9WSynS+QPl6DiqKzbl6
+oa+gfAMH05vtP/8E3IXyDR2uhCXcqNhxAso3cjB1/zftz+LlUL6xg61b/uTm
++6lQvonDl6x3on/PaUL5pmh8MzS+ORrfAo1vica3QuNbo/Ft0Pi2aHw7NL69
+wxpfH76HZjC+g0Ntowtz10xWCL8Bjc/giCaPxmdwQpNH4zM4o8kj+ADd5qWg
+
+         "]]}, {{}, {}}},
+      AspectRatio->NCache[GoldenRatio^(-1), 0.6180339887498948],
+      Axes->{True, True},
+      AxesLabel->{
+        FormBox["\"ilo\:015b\[CAcute] iteracji\"", TraditionalForm], 
+        FormBox["\"warto\:015b\[CAcute]\"", TraditionalForm]},
+      AxesOrigin->{0., 0},
+      DisplayFunction->Identity,
+      Frame->{{False, False}, {False, False}},
+      FrameLabel->{{None, None}, {None, None}},
+      FrameTicks->{{Automatic, Automatic}, {Automatic, Automatic}},
+      GridLines->{None, None},
+      GridLinesStyle->Directive[
+        GrayLevel[0.5, 0.4]],
+      ImageSize->400,
+      Method->{
+       "OptimizePlotMarkers" -> True, "OptimizePlotMarkers" -> True, 
+        "CoordinatesToolOptions" -> {"DisplayFunction" -> ({
+            Identity[
+             Part[#, 1]], 
+            Identity[
+             Part[#, 2]]}& ), "CopiedValueFunction" -> ({
+            Identity[
+             Part[#, 1]], 
+            Identity[
+             Part[#, 2]]}& )}},
+      PlotLabel->FormBox["\"przebieg \[CapitalPhi](xBest)\"", TraditionalForm],
+      PlotRange->{{0., 39.}, {0, 14.270557615131308`}},
+      PlotRangeClipping->True,
+      PlotRangePadding->{{
+         Scaled[0.02], 
+         Scaled[0.02]}, {
+         Scaled[0.02], 
+         Scaled[0.05]}},
+      Ticks->{Automatic, Automatic}]},
+    {
+     GraphicsBox[{{}, {{}, {}, 
+        {RGBColor[0.5, 0, 0.5], PointSize[
+          NCache[
+           Rational[7, 360], 0.019444444444444445`]], Thickness[Large], 
+         LineBox[CompressedData["
+1:eJxTTMoPSmViYGBQA2IQDQEf7B81usxmrNV2gAo4vD3G5v6kQAPK53BYJag/
+4RqTKpQv4LAuQ8SPXV8ZyhdxSFv50+GOriKUL+HwY3b1Q+YQWShfxsGozXGa
+cp0ElK/gILUga3XABhEoX8nhxFxLH6X3glC+isOOtZea/mjzQflqDs82+9z5
+WcUG5Ws4tH7X/xB+9789hK/lwLPk3EOdw1+hfB0HH6vrdqd3v4Xy9RwObOz7
+OuHEQyjfwOHx8feHap9fgPINHY6evuUnZLkLyjdy+BCzdeVTxyYo39ghxObx
+I9mrIVC+icOXrHeif89pQvmmaHwzNL45Gt8CjW+JxrdC41uj8W3Q+LZofDuH
+O9zJwp5zYHx7hx37V/cui5SB8h0cahtdmLtmskL4DWh8Bkc0eTQ+gxOaPBqf
+wRnOBwBtfKXr
+          "]]}}, {{}, {}}},
+      AspectRatio->NCache[GoldenRatio^(-1), 0.6180339887498948],
+      Axes->{True, True},
+      AxesLabel->{
+        FormBox["\"ilo\:015b\[CAcute] iteracji\"", TraditionalForm], 
+        FormBox["\"\:015brednia warto\:015b\[CAcute]\"", TraditionalForm]},
+      AxesOrigin->{0., 0},
+      DisplayFunction->Identity,
+      Frame->{{False, False}, {False, False}},
+      FrameLabel->{{None, None}, {None, None}},
+      FrameTicks->{{Automatic, Automatic}, {Automatic, Automatic}},
+      GridLines->{None, None},
+      GridLinesStyle->Directive[
+        GrayLevel[0.5, 0.4]],
+      ImageSize->400,
+      Method->{
+       "OptimizePlotMarkers" -> True, "OptimizePlotMarkers" -> True, 
+        "CoordinatesToolOptions" -> {"DisplayFunction" -> ({
+            Identity[
+             Part[#, 1]], 
+            Identity[
+             Part[#, 2]]}& ), "CopiedValueFunction" -> ({
+            Identity[
+             Part[#, 1]], 
+            Identity[
+             Part[#, 2]]}& )}},
+      PlotLabel->FormBox[
+       "\"przebieg \[CapitalPhi] \:015brednie w iteracji\"", TraditionalForm],
+      PlotRange->{{0., 38.}, {0, 13.744152881729807`}},
+      PlotRangeClipping->True,
+      PlotRangePadding->{{
+         Scaled[0.02], 
+         Scaled[0.02]}, {
+         Scaled[0.02], 
+         Scaled[0.05]}},
+      Ticks->{Automatic, Automatic}], 
+     TagBox[
+      StyleBox[
+       DynamicModuleBox[{$CellContext`j$$ = 1, Typeset`show$$ = True, 
+        Typeset`bookmarkList$$ = {}, Typeset`bookmarkMode$$ = "Menu", 
+        Typeset`animator$$, Typeset`animvar$$ = 1, Typeset`name$$ = 
+        "\"untitled\"", Typeset`specs$$ = {{
+          Hold[$CellContext`j$$], 1, 38, 1}}, Typeset`size$$ = {
+        396.00000000000006`, {196., 200.00000000000006`}}, Typeset`update$$ = 
+        0, Typeset`initDone$$, Typeset`skipInitDone$$ = True}, 
+        DynamicBox[Manipulate`ManipulateBoxes[
+         1, StandardForm, "Variables" :> {$CellContext`j$$ = 1}, 
+          "ControllerVariables" :> {}, 
+          "OtherVariables" :> {
+           Typeset`show$$, Typeset`bookmarkList$$, Typeset`bookmarkMode$$, 
+            Typeset`animator$$, Typeset`animvar$$, Typeset`name$$, 
+            Typeset`specs$$, Typeset`size$$, Typeset`update$$, 
+            Typeset`initDone$$, Typeset`skipInitDone$$}, "Body" :> 
+          Module[{$CellContext`currentLocation$ = 
+             Part[$CellContext`locations$14138, $CellContext`j$$], \
+$CellContext`from$ = Part[$CellContext`locations$14138, 
+               Span[1, $CellContext`j$$ - 1]], $CellContext`to$ = 
+             Part[$CellContext`locations$14138, 
+               Span[2, $CellContext`j$$]]}, 
+            DensityPlot[
+             $CellContext`function$14138[$CellContext`x, $CellContext`y], \
+{$CellContext`x, $CellContext`xmin$14138, $CellContext`xmax$14138}, \
+{$CellContext`y, $CellContext`ymin$14138, $CellContext`ymax$14138}, 
+             Epilog -> {Red, 
+               PointSize[Large], 
+               Point[$CellContext`currentLocation$], Thick, 
+               Line[
+                Transpose[{$CellContext`from$, $CellContext`to$}]], Thin, 
+               Line[
+                Transpose[{
+                  Part[$CellContext`locations$14138, 
+                   Span[1, $CellContext`j$$ - 1]], 
+                  Part[$CellContext`locations$14138, 
+                   Span[2, $CellContext`j$$]]}]]}]], 
+          "Specifications" :> {{$CellContext`j$$, 1, 38, 1, 
+             AppearanceElements -> {
+              "ProgressSlider", "PlayPauseButton", "FasterSlowerButtons", 
+               "DirectionButton"}}}, 
+          "Options" :> {
+           ControlType -> Animator, AppearanceElements -> None, 
+            DefaultBaseStyle -> "Animate", DefaultLabelStyle -> 
+            "AnimateLabel", SynchronousUpdating -> True, ShrinkingDelay -> 
+            10.}, "DefaultOptions" :> {}],
+         ImageSizeCache->{448., {233., 239.}},
+         SingleEvaluation->True],
+        Deinitialization:>None,
+        DynamicModuleValues:>{},
+        SynchronousInitialization->True,
+        UndoTrackedVariables:>{Typeset`show$$, Typeset`bookmarkMode$$},
+        UnsavedVariables:>{Typeset`initDone$$},
+        UntrackedVariables:>{Typeset`size$$}], "Animate",
+       Deployed->True,
+       StripOnInput->False],
+      Manipulate`InterpretManipulate[1]]}
+   },
+   AutoDelete->False,
+   GridBoxAlignment->{"Columns" -> {{Left}}},
+   GridBoxFrame->{"Columns" -> {{True}}, "Rows" -> {{True}}},
+   GridBoxItemSize->{"Columns" -> {{36}}, "Rows" -> {{25}}}],
+  "Grid"]], "Print",
+ CellChangeTimes->{
+  3.890655384334035*^9, {3.8906554927813945`*^9, 3.8906555331004715`*^9}, 
+   3.8906555805780926`*^9, {3.8906556608281927`*^9, 3.8906556706074657`*^9}, {
+   3.890656252784481*^9, 3.8906563104194236`*^9}, {3.890656360904185*^9, 
+   3.8906563818587017`*^9}, 3.89065650653333*^9, {3.890656639164856*^9, 
+   3.8906566919624643`*^9}, {3.8906567330768447`*^9, 3.8906567867891397`*^9}, 
+   3.890662122842476*^9, 3.890662194727777*^9, 3.89066391829088*^9, {
+   3.890664912951267*^9, 3.890664920959899*^9}, {3.8906656428676434`*^9, 
+   3.890665672659811*^9}, 3.8906658203176985`*^9, 3.8906660483871293`*^9, 
+   3.8906661124541607`*^9, 3.890666629181916*^9, 3.8906669044356813`*^9, 
+   3.890666939798817*^9, 3.8906670676093454`*^9},
+ CellLabel->
+  "During evaluation of \
+In[26]:=",ExpressionUUID->"505611a1-da64-4f4a-aa4c-2ec0ebcc217b"]
+}, Open  ]],
+
+Cell["-> funkcja Rastrigin\[CloseCurlyQuote]a", "Text",
+ CellChangeTimes->{{3.8906630789727736`*^9, 
+  3.8906630869653125`*^9}},ExpressionUUID->"f6d3c8e5-c65b-4543-b0c7-\
+d7413a763f54"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"dzialanieHeurystyki", "[", 
+  RowBox[{"Metropolis", "[", 
+   RowBox[{"RastriginFunction2D", ",", 
+    RowBox[{"-", "1"}], ",", "1", ",", 
+    RowBox[{"-", "1"}], ",", "1", ",", "100", ",", "40", ",", "20", ",", 
+    "0.4", ",", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"RandomReal", "[", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"-", "1"}], ",", "1"}], "}"}], "]"}], ",", 
+      RowBox[{"RandomReal", "[", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"-", "1"}], ",", "1"}], "}"}], "]"}]}], "}"}]}], "]"}], 
+  "]"}]], "Input",
+ CellChangeTimes->{{3.890659407949828*^9, 3.8906595406213775`*^9}, {
+  3.890659610378802*^9, 3.8906596107812986`*^9}, {3.8906596451085386`*^9, 
+  3.8906596620661774`*^9}, {3.890659698007373*^9, 3.8906597222386627`*^9}, {
+  3.890659773989237*^9, 3.890659782836957*^9}, {3.890659862058071*^9, 
+  3.8906599224445906`*^9}, {3.890659965526539*^9, 3.8906599725775423`*^9}, {
+  3.890660006075637*^9, 3.8906600716690254`*^9}, {3.8906601090512133`*^9, 
+  3.890660113640089*^9}, {3.8906604431664443`*^9, 3.890660474634961*^9}, {
+  3.89066713764459*^9, 3.8906671442309575`*^9}},
+ CellLabel->"In[40]:=",ExpressionUUID->"0796ceca-32d4-407f-ae94-9d8f596c6492"],
+
+Cell[BoxData[
+ TagBox[GridBox[{
+    {"\<\"fMin(-0.00414146, -0.00302339)=-1.99572\"\>", 
+     GraphicsBox[{{}, 
+       {RGBColor[0.5, 0, 0.5], PointSize[0.012833333333333334`], 
+        AbsoluteThickness[1.6], PointBox[CompressedData["
+1:eJxdybsOAVEQgOEJjVIhotgCEUEQ99vaPcelUnqETdQKLyAUGiVvQCMSao0n
+8QAaUVK5ZDcR/ySTyTd/zBkPRz4RSX/2e925q2PYWa63e+U99Obqzy3sx9ll
+QM8G1u60enoO6sPcuExuL88hOAIbcBSOwwk4CafgDJyF83ABLsIluAxX4Cpc
+g+twA27CLdiE27AF27CC9b+nsHTQYemiw9JDh6WP/vMb1cTs8Q==
+         "]]}, {{}, {}}},
+      AspectRatio->NCache[GoldenRatio^(-1), 0.6180339887498948],
+      Axes->{True, True},
+      AxesLabel->{
+        FormBox["\"ilo\:015b\[CAcute] iteracji\"", TraditionalForm], 
+        FormBox["\"warto\:015b\[CAcute]\"", TraditionalForm]},
+      AxesOrigin->{0., 0},
+      DisplayFunction->Identity,
+      Frame->{{False, False}, {False, False}},
+      FrameLabel->{{None, None}, {None, None}},
+      FrameTicks->{{Automatic, Automatic}, {Automatic, Automatic}},
+      GridLines->{None, None},
+      GridLinesStyle->Directive[
+        GrayLevel[0.5, 0.4]],
+      ImageSize->400,
+      Method->{
+       "OptimizePlotMarkers" -> True, "OptimizePlotMarkers" -> True, 
+        "CoordinatesToolOptions" -> {"DisplayFunction" -> ({
+            Identity[
+             Part[#, 1]], 
+            Identity[
+             Part[#, 2]]}& ), "CopiedValueFunction" -> ({
+            Identity[
+             Part[#, 1]], 
+            Identity[
+             Part[#, 2]]}& )}},
+      PlotLabel->FormBox["\"przebieg \[CapitalPhi](xBest)\"", TraditionalForm],
+      PlotRange->{{0., 41.}, {-1.9957159650004817`, 0.055950806986442614`}},
+      PlotRangeClipping->True,
+      PlotRangePadding->{{
+         Scaled[0.02], 
+         Scaled[0.02]}, {
+         Scaled[0.05], 
+         Scaled[0.05]}},
+      Ticks->{Automatic, Automatic}]},
+    {
+     GraphicsBox[{{}, {{}, {}, 
+        {RGBColor[0.5, 0, 0.5], PointSize[
+          NCache[
+           Rational[7, 360], 0.019444444444444445`]], Thickness[Large], 
+         LineBox[CompressedData["
+1:eJxTTMoPSmViYGDQAGIQDQEf7FvkrsjmH7xpDxVw6DJ5sr/25y0on8OBncem
+cyHT6f0QvoCDC1+X4EyVe1C+iINt1GqdwIVLoeolHL7fuHh0YsgsKF/GYdbe
+N8yJOuug6hUcHsx3+b3d6jqUr+Rw94CVwWbbM1C+isOpRz1xLY3HoXw1B4vq
+bqEZyUeg5mk4TJUs0Du65hiUr+UwNzu+ee3781D1Og5fr5tb67icg8rrOTRY
+ZPrePXAYKm/g0P9O6egpkYNQvqFDuAe//DsWmPuNHEyMZBNXaGyFyhs7bMh4
+LB/8+hyUb+LgElqWLhG3E8o3dbi+z+PN3Nv3oXwzhwfmW79mbNgL5Zs7ZG3y
+YpsnfhZqvoWDw+nex+dWX4bKWzrwvBY41/H4IFTeyuGrqMuqvsRdUL61Q8GF
+76y952DqbRyqeRn5zy+6COXbOnw9MWkm270jUL6dwx77ec+P8FyB8u0dep09
+Pt4waoDyHRyMi/8pxU9IhJjf4ODwIVd9sjHnUai8o8O+TVsPsG16AuE3ODpI
+X3o3p7HvMtQ9Tg6vrkab3NeCxn+Dk8OqBZ5Lb93cCNXv7HBD+1rCQtM7UHln
+h4oGnkmmHUuh8i4Op5xvXlh35tR+APMsxMc=
+          "]]}}, {{}, {}}},
+      AspectRatio->NCache[GoldenRatio^(-1), 0.6180339887498948],
+      Axes->{True, True},
+      AxesLabel->{
+        FormBox["\"ilo\:015b\[CAcute] iteracji\"", TraditionalForm], 
+        FormBox["\"\:015brednia warto\:015b\[CAcute]\"", TraditionalForm]},
+      AxesOrigin->{0., 0},
+      DisplayFunction->Identity,
+      Frame->{{False, False}, {False, False}},
+      FrameLabel->{{None, None}, {None, None}},
+      FrameTicks->{{Automatic, Automatic}, {Automatic, Automatic}},
+      GridLines->{None, None},
+      GridLinesStyle->Directive[
+        GrayLevel[0.5, 0.4]],
+      ImageSize->400,
+      Method->{
+       "OptimizePlotMarkers" -> True, "OptimizePlotMarkers" -> True, 
+        "CoordinatesToolOptions" -> {"DisplayFunction" -> ({
+            Identity[
+             Part[#, 1]], 
+            Identity[
+             Part[#, 2]]}& ), "CopiedValueFunction" -> ({
+            Identity[
+             Part[#, 1]], 
+            Identity[
+             Part[#, 2]]}& )}},
+      PlotLabel->FormBox[
+       "\"przebieg \[CapitalPhi] \:015brednie w iteracji\"", TraditionalForm],
+      PlotRange->{{0., 40.}, {-0.6467317355978464, 0.42147773494145524`}},
+      PlotRangeClipping->True,
+      PlotRangePadding->{{
+         Scaled[0.02], 
+         Scaled[0.02]}, {
+         Scaled[0.05], 
+         Scaled[0.05]}},
+      Ticks->{Automatic, Automatic}], 
+     TagBox[
+      StyleBox[
+       DynamicModuleBox[{$CellContext`j$$ = 15, Typeset`show$$ = True, 
+        Typeset`bookmarkList$$ = {}, Typeset`bookmarkMode$$ = "Menu", 
+        Typeset`animator$$, Typeset`animvar$$ = 1, Typeset`name$$ = 
+        "\"untitled\"", Typeset`specs$$ = {{
+          Hold[$CellContext`j$$], 1, 40, 1}}, Typeset`size$$ = {
+        396.00000000000006`, {191., 196.0000000000001}}, Typeset`update$$ = 0,
+         Typeset`initDone$$, Typeset`skipInitDone$$ = True}, 
+        DynamicBox[Manipulate`ManipulateBoxes[
+         1, StandardForm, "Variables" :> {$CellContext`j$$ = 1}, 
+          "ControllerVariables" :> {}, 
+          "OtherVariables" :> {
+           Typeset`show$$, Typeset`bookmarkList$$, Typeset`bookmarkMode$$, 
+            Typeset`animator$$, Typeset`animvar$$, Typeset`name$$, 
+            Typeset`specs$$, Typeset`size$$, Typeset`update$$, 
+            Typeset`initDone$$, Typeset`skipInitDone$$}, "Body" :> 
+          Module[{$CellContext`currentLocation$ = 
+             Part[$CellContext`locations$42850, $CellContext`j$$], \
+$CellContext`from$ = Part[$CellContext`locations$42850, 
+               Span[1, $CellContext`j$$ - 1]], $CellContext`to$ = 
+             Part[$CellContext`locations$42850, 
+               Span[2, $CellContext`j$$]]}, 
+            DensityPlot[
+             $CellContext`function$42850[$CellContext`x, $CellContext`y], \
+{$CellContext`x, $CellContext`xmin$42850, $CellContext`xmax$42850}, \
+{$CellContext`y, $CellContext`ymin$42850, $CellContext`ymax$42850}, 
+             Epilog -> {Red, 
+               PointSize[Large], 
+               Point[$CellContext`currentLocation$], Thick, 
+               Line[
+                Transpose[{$CellContext`from$, $CellContext`to$}]], Thin, 
+               Line[
+                Transpose[{
+                  Part[$CellContext`locations$42850, 
+                   Span[1, $CellContext`j$$ - 1]], 
+                  Part[$CellContext`locations$42850, 
+                   Span[2, $CellContext`j$$]]}]]}]], 
+          "Specifications" :> {{$CellContext`j$$, 1, 40, 1, 
+             AppearanceElements -> {
+              "ProgressSlider", "PlayPauseButton", "FasterSlowerButtons", 
+               "DirectionButton"}}}, 
+          "Options" :> {
+           ControlType -> Animator, AppearanceElements -> None, 
+            DefaultBaseStyle -> "Animate", DefaultLabelStyle -> 
+            "AnimateLabel", SynchronousUpdating -> True, ShrinkingDelay -> 
+            10.}, "DefaultOptions" :> {}],
+         ImageSizeCache->{448., {229., 235.}},
+         SingleEvaluation->True],
+        Deinitialization:>None,
+        DynamicModuleValues:>{},
+        SynchronousInitialization->True,
+        UndoTrackedVariables:>{Typeset`show$$, Typeset`bookmarkMode$$},
+        UnsavedVariables:>{Typeset`initDone$$},
+        UntrackedVariables:>{Typeset`size$$}], "Animate",
+       Deployed->True,
+       StripOnInput->False],
+      Manipulate`InterpretManipulate[1]]}
+   },
+   AutoDelete->False,
+   GridBoxAlignment->{"Columns" -> {{Left}}},
+   GridBoxFrame->{"Columns" -> {{True}}, "Rows" -> {{True}}},
+   GridBoxItemSize->{"Columns" -> {{36}}, "Rows" -> {{25}}}],
+  "Grid"]], "Print",
+ CellChangeTimes->{{3.890659437745838*^9, 3.8906596560828447`*^9}, {
+   3.89065972477599*^9, 3.8906597401572924`*^9}, {3.890659775305846*^9, 
+   3.8906597840043025`*^9}, {3.89065986308992*^9, 3.8906599737123375`*^9}, {
+   3.890660027814029*^9, 3.89066013742593*^9}, {3.890660443964095*^9, 
+   3.890660479096881*^9}, {3.890662128563382*^9, 3.8906621333130903`*^9}, 
+   3.8906621976821423`*^9, 3.890664296393717*^9, 3.8906669050692964`*^9, {
+   3.8906670778767376`*^9, 3.8906670829867816`*^9}, {3.8906671382316427`*^9, 
+   3.890667145033471*^9}},
+ CellLabel->
+  "During evaluation of \
+In[40]:=",ExpressionUUID->"6227b7cc-e8c8-4b61-8f25-6922b6c22a67"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"dzialanieHeurystyki", "[", 
+  RowBox[{"symulowaneWy\:017carzanie", "[", 
+   RowBox[{"RastriginFunction2D", ",", 
+    RowBox[{"-", "1"}], ",", "1", ",", 
+    RowBox[{"-", "1"}], ",", "1", ",", "100", ",", "10", ",", "20", ",", 
+    "0.3", ",", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"RandomReal", "[", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"-", "1"}], ",", "1"}], "}"}], "]"}], ",", 
+      RowBox[{"RandomReal", "[", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"-", "1"}], ",", "1"}], "}"}], "]"}]}], "}"}]}], "]"}], 
+  "]"}]], "Input",
+ CellChangeTimes->{{3.890660158081551*^9, 3.890660188627329*^9}, {
+   3.8906603666370935`*^9, 3.890660428437944*^9}, {3.890664132871122*^9, 
+   3.890664161725961*^9}, 3.8906643051971245`*^9, {3.8906656914850855`*^9, 
+   3.8906657666774836`*^9}, 3.89066584957099*^9, {3.890666014415786*^9, 
+   3.8906660145782185`*^9}, {3.890667122067981*^9, 3.8906671330065637`*^9}},
+ CellLabel->"In[37]:=",ExpressionUUID->"dcc60d09-4780-452d-b0bf-8ad206210f30"],
+
+Cell[BoxData[
+ TagBox[GridBox[{
+    {"\<\"fMin(0.000259515, 0.00370903)=-1.99775\"\>", 
+     GraphicsBox[{{}, 
+       {RGBColor[0.5, 0, 0.5], PointSize[0.012833333333333334`], 
+        AbsoluteThickness[1.6], PointBox[CompressedData["
+1:eJxTTMoPSmViYGDQBWIQDQEf7J9FTy+Yfv29PVTAoSPvSPebKV/3Q7gcDms8
+RX/6BH6H8gUc7hkGH5304heUL+LwZae0yzvWf1C+hMMZw7nhi4/+h/Jl0PgK
+aHwlNL4KGl8Nja+Bxtdy6ArPvcd1GsbXQePrORyuTOc99g3GN0DjG6LxjdD4
+xmh8EzS+KRrfDI1vjsa3QONbovGt0PjWaHwbNL4tGt8OjW+PxndA5Teg8Rkc
+0eTR+AxOaPJofAZnNHk0PoMLmjwan8EVTR6Nz+CGJo/gAwDVIQBR
+         "]]}, {{}, {}}},
+      AspectRatio->NCache[GoldenRatio^(-1), 0.6180339887498948],
+      Axes->{True, True},
+      AxesLabel->{
+        FormBox["\"ilo\:015b\[CAcute] iteracji\"", TraditionalForm], 
+        FormBox["\"warto\:015b\[CAcute]\"", TraditionalForm]},
+      AxesOrigin->{0., -1.9660913791596486`},
+      DisplayFunction->Identity,
+      Frame->{{False, False}, {False, False}},
+      FrameLabel->{{None, None}, {None, None}},
+      FrameTicks->{{Automatic, Automatic}, {Automatic, Automatic}},
+      GridLines->{None, None},
+      GridLinesStyle->Directive[
+        GrayLevel[0.5, 0.4]],
+      ImageSize->400,
+      Method->{
+       "OptimizePlotMarkers" -> True, "OptimizePlotMarkers" -> True, 
+        "CoordinatesToolOptions" -> {"DisplayFunction" -> ({
+            Identity[
+             Part[#, 1]], 
+            Identity[
+             Part[#, 2]]}& ), "CopiedValueFunction" -> ({
+            Identity[
+             Part[#, 1]], 
+            Identity[
+             Part[#, 2]]}& )}},
+      PlotLabel->FormBox["\"przebieg \[CapitalPhi](xBest)\"", TraditionalForm],
+      PlotRange->{{0., 45.}, {-1.997747471199191, -1.9677574892669925`}},
+      PlotRangeClipping->True,
+      PlotRangePadding->{{
+         Scaled[0.02], 
+         Scaled[0.02]}, {
+         Scaled[0.05], 
+         Scaled[0.05]}},
+      Ticks->{Automatic, Automatic}]},
+    {
+     GraphicsBox[{{}, {{}, {}, 
+        {RGBColor[0.5, 0, 0.5], PointSize[
+          NCache[
+           Rational[7, 360], 0.019444444444444445`]], Thickness[Large], 
+         LineBox[CompressedData["
+1:eJxTTMoPSmViYGDQAGIQHZUWsl2XX9zh0dG3bu+r/+9nAAMJh/OGc8MXH4Xx
+ZdD4Cmh8JTS+ChpfDY2v4WDhM/V89kkYX8uhKzz3HtdpGF/HgctTwNXrAYyv
+53CoMp332DcY3wCNb4jGN0LjG6PxTdD4pmh8MzS+ORrfAo1vica3QuNbo/Ft
+0Pi2aHw7NL49Gt8Bld+AxmdwRJNH4zM4ocmj8Rmc0eTR+AwuaPJofAZXNHk0
+PoMbnA8AVAjl0Q==
+          "]]}}, {{}, {}}},
+      AspectRatio->NCache[GoldenRatio^(-1), 0.6180339887498948],
+      Axes->{True, True},
+      AxesLabel->{
+        FormBox["\"ilo\:015b\[CAcute] iteracji\"", TraditionalForm], 
+        FormBox["\"\:015brednia warto\:015b\[CAcute]\"", TraditionalForm]},
+      AxesOrigin->{0., -1.9660913791596504`},
+      DisplayFunction->Identity,
+      Frame->{{False, False}, {False, False}},
+      FrameLabel->{{None, None}, {None, None}},
+      FrameTicks->{{Automatic, Automatic}, {Automatic, Automatic}},
+      GridLines->{None, None},
+      GridLinesStyle->Directive[
+        GrayLevel[0.5, 0.4]],
+      ImageSize->400,
+      Method->{
+       "OptimizePlotMarkers" -> True, "OptimizePlotMarkers" -> True, 
+        "CoordinatesToolOptions" -> {"DisplayFunction" -> ({
+            Identity[
+             Part[#, 1]], 
+            Identity[
+             Part[#, 2]]}& ), "CopiedValueFunction" -> ({
+            Identity[
+             Part[#, 1]], 
+            Identity[
+             Part[#, 2]]}& )}},
+      PlotLabel->FormBox[
+       "\"przebieg \[CapitalPhi] \:015brednie w iteracji\"", TraditionalForm],
+      PlotRange->{{0., 44.}, {-1.9977474711991907`, -1.9677574892669942`}},
+      PlotRangeClipping->True,
+      PlotRangePadding->{{
+         Scaled[0.02], 
+         Scaled[0.02]}, {
+         Scaled[0.05], 
+         Scaled[0.05]}},
+      Ticks->{Automatic, Automatic}], 
+     TagBox[
+      StyleBox[
+       DynamicModuleBox[{$CellContext`j$$ = 24, Typeset`show$$ = True, 
+        Typeset`bookmarkList$$ = {}, Typeset`bookmarkMode$$ = "Menu", 
+        Typeset`animator$$, Typeset`animvar$$ = 1, Typeset`name$$ = 
+        "\"untitled\"", Typeset`specs$$ = {{
+          Hold[$CellContext`j$$], 1, 44, 1}}, Typeset`size$$ = {
+        396.00000000000006`, {191., 196.0000000000001}}, Typeset`update$$ = 0,
+         Typeset`initDone$$, Typeset`skipInitDone$$ = True}, 
+        DynamicBox[Manipulate`ManipulateBoxes[
+         1, StandardForm, "Variables" :> {$CellContext`j$$ = 1}, 
+          "ControllerVariables" :> {}, 
+          "OtherVariables" :> {
+           Typeset`show$$, Typeset`bookmarkList$$, Typeset`bookmarkMode$$, 
+            Typeset`animator$$, Typeset`animvar$$, Typeset`name$$, 
+            Typeset`specs$$, Typeset`size$$, Typeset`update$$, 
+            Typeset`initDone$$, Typeset`skipInitDone$$}, "Body" :> 
+          Module[{$CellContext`currentLocation$ = 
+             Part[$CellContext`locations$39152, $CellContext`j$$], \
+$CellContext`from$ = Part[$CellContext`locations$39152, 
+               Span[1, $CellContext`j$$ - 1]], $CellContext`to$ = 
+             Part[$CellContext`locations$39152, 
+               Span[2, $CellContext`j$$]]}, 
+            DensityPlot[
+             $CellContext`function$39152[$CellContext`x, $CellContext`y], \
+{$CellContext`x, $CellContext`xmin$39152, $CellContext`xmax$39152}, \
+{$CellContext`y, $CellContext`ymin$39152, $CellContext`ymax$39152}, 
+             Epilog -> {Red, 
+               PointSize[Large], 
+               Point[$CellContext`currentLocation$], Thick, 
+               Line[
+                Transpose[{$CellContext`from$, $CellContext`to$}]], Thin, 
+               Line[
+                Transpose[{
+                  Part[$CellContext`locations$39152, 
+                   Span[1, $CellContext`j$$ - 1]], 
+                  Part[$CellContext`locations$39152, 
+                   Span[2, $CellContext`j$$]]}]]}]], 
+          "Specifications" :> {{$CellContext`j$$, 1, 44, 1, 
+             AppearanceElements -> {
+              "ProgressSlider", "PlayPauseButton", "FasterSlowerButtons", 
+               "DirectionButton"}}}, 
+          "Options" :> {
+           ControlType -> Animator, AppearanceElements -> None, 
+            DefaultBaseStyle -> "Animate", DefaultLabelStyle -> 
+            "AnimateLabel", SynchronousUpdating -> True, ShrinkingDelay -> 
+            10.}, "DefaultOptions" :> {}],
+         ImageSizeCache->{448., {229., 235.}},
+         SingleEvaluation->True],
+        Deinitialization:>None,
+        DynamicModuleValues:>{},
+        SynchronousInitialization->True,
+        UndoTrackedVariables:>{Typeset`show$$, Typeset`bookmarkMode$$},
+        UnsavedVariables:>{Typeset`initDone$$},
+        UntrackedVariables:>{Typeset`size$$}], "Animate",
+       Deployed->True,
+       StripOnInput->False],
+      Manipulate`InterpretManipulate[1]]}
+   },
+   AutoDelete->False,
+   GridBoxAlignment->{"Columns" -> {{Left}}},
+   GridBoxFrame->{"Columns" -> {{True}}, "Rows" -> {{True}}},
+   GridBoxItemSize->{"Columns" -> {{36}}, "Rows" -> {{25}}}],
+  "Grid"]], "Print",
+ CellChangeTimes->{{3.8906601827591195`*^9, 3.8906602112711163`*^9}, {
+   3.890660317817376*^9, 3.890660486334995*^9}, 3.8906621398060665`*^9, 
+   3.8906622012866464`*^9, 3.890663926898387*^9, {3.8906641335521984`*^9, 
+   3.8906641624358654`*^9}, 3.8906643065827446`*^9, {3.8906656861830206`*^9, 
+   3.8906657671486497`*^9}, {3.8906658293168993`*^9, 3.8906658500751286`*^9}, 
+   3.890666015356062*^9, 3.890666905176938*^9, {3.890667093796402*^9, 
+   3.8906671335174932`*^9}},
+ CellLabel->
+  "During evaluation of \
+In[37]:=",ExpressionUUID->"2fe34509-63e1-429d-885d-e027112276ec"]
+}, Open  ]],
+
+Cell["->  dolina Rosenbrocka", "Text",
+ CellChangeTimes->{{3.8906631044972787`*^9, 
+  3.890663105359795*^9}},ExpressionUUID->"e6c691f9-9473-454c-87fd-\
+71ff2323625b"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"dzialanieHeurystyki", "[", 
+  RowBox[{"Metropolis", "[", 
+   RowBox[{"RosenbrockFunction2D", ",", 
+    RowBox[{"-", "5"}], ",", "5", ",", 
+    RowBox[{"-", "5"}], ",", "5", ",", "100", ",", "120", ",", "20", ",", 
+    "0.2", ",", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"RandomReal", "[", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"-", "5"}], ",", "5"}], "}"}], "]"}], ",", 
+      RowBox[{"RandomReal", "[", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"-", "5"}], ",", "5"}], "}"}], "]"}]}], "}"}]}], "]"}], 
+  "]"}]], "Input",
+ CellChangeTimes->{{3.890660512439457*^9, 3.890660529795574*^9}, {
+  3.890660651002446*^9, 3.8906606750787363`*^9}},
+ CellLabel->"In[19]:=",ExpressionUUID->"0711dc6e-6c40-43f9-ae14-dd9b0bbe02c5"],
+
+Cell[BoxData[
+ TagBox[GridBox[{
+    {"\<\"fMin(1.00284, 1.00743)=0.000308052\"\>", 
+     GraphicsBox[{{}, 
+       {RGBColor[0.5, 0, 0.5], PointSize[0.009166666666666668], 
+        AbsoluteThickness[1.6], PointBox[CompressedData["
+1:eJxdy19ozWEcx/FvduNCkYSyC1tIrNM4MzPj953Nsf/2FzMH+bPcILNEsZ7a
+DZt/RUz+1KJYUitzLmQ8LI2aLbuhWWl2IVuNXKzY5E/7ls77qaen1/Puk7Tn
+cPn+aSJy4u/9906db8HFS4nfE1pG1T70bcLr8ba6z+bpevxIRkPWr2HzLB2r
+zexInzFknqM32zrvBDMHzfM1uvhBxYf6d+ZE3Xvr5PMzv/vNC3X2wKFjJUNv
+zMk6FC2YON3TbV6kc8/3X45WvzAv0dK8jkcjSZ3mpTr2Y3I8OSdmXqaNVzIX
+FDa3m1O06+O+5Q8n75pDGjmXG7nR22pO1fqz156Efl41r9B79w9OhpqazSs1
+v6XrdrjulDmsTT19408nas1p+j68q6astcy8Skd2jw6+PJpiTtfixmfh7tCn
+YMqrtXfsa2VF3wVzhr76EnucHTtgXgNnwmvhLHgdvB4OYI23gyUbHZYN6LDk
+oMOSiw7LRnRYIugRzZnXfj3cUGR9U7wdLHnosOSjw1KADkshOixF6LAUo8NS
+gg7LZnRYSuOtsIM9LGXYww72sJRjDzvYw1KBPexgD0sl9rCDPSxV2FdpMBAM
+B6lptoc9LFvirbCDPSxbsYcd7GHZhj3sYA9LNfawgz0s27GHHexhqcEedrCH
+ZQf2sIM9LFHsYQd7WHZi/99/AFMOC6M=
+         "]]}, {{}, {}}},
+      AspectRatio->NCache[GoldenRatio^(-1), 0.6180339887498948],
+      Axes->{True, True},
+      AxesLabel->{
+        FormBox["\"ilo\:015b\[CAcute] iteracji\"", TraditionalForm], 
+        FormBox["\"warto\:015b\[CAcute]\"", TraditionalForm]},
+      AxesOrigin->{0., 0},
+      DisplayFunction->Identity,
+      Frame->{{False, False}, {False, False}},
+      FrameLabel->{{None, None}, {None, None}},
+      FrameTicks->{{Automatic, Automatic}, {Automatic, Automatic}},
+      GridLines->{None, None},
+      GridLinesStyle->Directive[
+        GrayLevel[0.5, 0.4]],
+      ImageSize->400,
+      Method->{
+       "OptimizePlotMarkers" -> True, "OptimizePlotMarkers" -> True, 
+        "CoordinatesToolOptions" -> {"DisplayFunction" -> ({
+            Identity[
+             Part[#, 1]], 
+            Identity[
+             Part[#, 2]]}& ), "CopiedValueFunction" -> ({
+            Identity[
+             Part[#, 1]], 
+            Identity[
+             Part[#, 2]]}& )}},
+      PlotLabel->FormBox["\"przebieg \[CapitalPhi](xBest)\"", TraditionalForm],
+      PlotRange->{{0., 121.}, {0, 1.420063475875744}},
+      PlotRangeClipping->True,
+      PlotRangePadding->{{
+         Scaled[0.02], 
+         Scaled[0.02]}, {
+         Scaled[0.02], 
+         Scaled[0.05]}},
+      Ticks->{Automatic, Automatic}]},
+    {
+     GraphicsBox[{{}, {{}, {}, 
+        {RGBColor[0.5, 0, 0.5], PointSize[
+          NCache[
+           Rational[1, 72], 0.013888888888888888`]], Thickness[Large], 
+         LineBox[CompressedData["
+1:eJw1VAtMU2cYvVNBh/IGAZG3r0AGRBE2ZO5YWt6PUtpCoWWVDRZxgDwWRESK
+M1Nxg83AMEEiUSpDxaFW4obCRYmTYVSUsRUUrCMElC1MMnmJjG3f3+SmOTn3
+/N/3ne/81y01W5K2hOO4tMXn3/8/7z1Qx0754VBUQ96Toi3g/vtthXJMev95
+uy9hf+gKiyZLNqwlHIDPAnxl6Z+4E34Xm/qs9SsWnAi/h5duot1Gg5aEA+GU
+eqf4wnduhLdBdXGP0LiO6YOgWz1radLmTPh9TF0tNGR3ORDejumv69IEN1j9
+D/CxY/V+RbU1YSBtPCHFqML1f6wBsKWnOiCcMLcDUm3ZLqdJF+J3wOhzF2+v
+/axfATZOth3Oy7MnXoBabf6pQ5tY/WC0rxqKix5eSXww3ohTRnXpbB4hCm7G
+LOF2Uv8aIYZ2pJzRg80vwrNMedDaX6ieRgS/Fn2RWTnTh0ArzLodIaH5NCEY
+5kYK1nVQP1wo/GqN8i18HIkPhfPQCa+kLqYPw5z7/M8/qKmeJgznvhR4GBzW
+ER+OzD4789RcNn84mmRWpY317PwIGKZ83uk4YEN8BCplC0+GvAlzkWg+XWq5
+Xsv8iQS3LP6iYyrbRxScVNqwgio74qOgvRcUdv8O8z8avWdbH6ob2HzRED4+
+GmpazfyPga+uqa1wfg3xMehs0PSEta4nPhbRgaOuhSx/mlgkCBdsz3XQPJwY
+GV5XGnMLyH+IcWQg9Nrrn9h5Yogrq6ZnjpM/vBg6K3/PkkaWtzic0kst8zI9
+SB+HuqymgTcryF9NHBZaXO2mjhqTPg6BCz4HdfJVpJdgl9p4zQYb8gcSFHlO
+fOSRz/Iogd9vTyN9zGh/vASTyivfykusSB8PC++M6Zc/kn+IR2XZrX3P1czP
+eBh13HI32NN5fDz+PvzK79Ujtj8pfMutnx3zNyW9FAWvHTuXG9i+pNhrGLk0
+MUeYl+JEun5u86/Mfxlcs+tdTEPpPkEG9ezKwd4xc9LLUMwnWj59TP7zMpT2
+mx3wl1N/nBxLvzlvejyH/IUczaq4bSP1LE9y8DecHVpm6H1ejvHtW3svTzN9
+AjofDJ7sMLD5E5DoeXf3mVrahyYBfuY6oXcV5Zlf5FUTc+1ZrP9EVIymZPR7
+s/qJyK643d7dx/xLhEl2ozTBgc7jF9+vmXfWj7L8KnDySFmxYYz8hQIBis3n
+E99m90UBQbVEclZuS3oFxgMyuqouM/+TUJ57qXtpD+UFSbDtfKvmdNdq0ich
+OtPkQ+0I8XwShlvx6Rc57PuSjJl+B+E+JWEkQ5Rud0zNMf+S0TT18Gqnju0v
+GTX2pdf7Wtn9UkJ6badX46wZ6ZW4vlFxd/wR7VOjhDI4fXmOgOVPia8y9E3N
+InZ/VPiju2KZhRHrX4XfD4698I1h+VVB5HXzL4u91A+vwvSekBcXvmfftxTo
+TYUDMUU2+AeFZrNq
+          "]]}}, {{}, {}}},
+      AspectRatio->NCache[GoldenRatio^(-1), 0.6180339887498948],
+      Axes->{True, True},
+      AxesLabel->{
+        FormBox["\"ilo\:015b\[CAcute] iteracji\"", TraditionalForm], 
+        FormBox["\"\:015brednia warto\:015b\[CAcute]\"", TraditionalForm]},
+      AxesOrigin->{0., 0},
+      DisplayFunction->Identity,
+      Frame->{{False, False}, {False, False}},
+      FrameLabel->{{None, None}, {None, None}},
+      FrameTicks->{{Automatic, Automatic}, {Automatic, Automatic}},
+      GridLines->{None, None},
+      GridLinesStyle->Directive[
+        GrayLevel[0.5, 0.4]],
+      ImageSize->400,
+      Method->{
+       "OptimizePlotMarkers" -> True, "OptimizePlotMarkers" -> True, 
+        "CoordinatesToolOptions" -> {"DisplayFunction" -> ({
+            Identity[
+             Part[#, 1]], 
+            Identity[
+             Part[#, 2]]}& ), "CopiedValueFunction" -> ({
+            Identity[
+             Part[#, 1]], 
+            Identity[
+             Part[#, 2]]}& )}},
+      PlotLabel->FormBox[
+       "\"przebieg \[CapitalPhi] \:015brednie w iteracji\"", TraditionalForm],
+      PlotRange->{{0., 120.}, {0, 19.48384783586927}},
+      PlotRangeClipping->True,
+      PlotRangePadding->{{
+         Scaled[0.02], 
+         Scaled[0.02]}, {
+         Scaled[0.02], 
+         Scaled[0.05]}},
+      Ticks->{Automatic, Automatic}], 
+     TagBox[
+      StyleBox[
+       DynamicModuleBox[{$CellContext`j$$ = 67, Typeset`show$$ = True, 
+        Typeset`bookmarkList$$ = {}, Typeset`bookmarkMode$$ = "Menu", 
+        Typeset`animator$$, Typeset`animvar$$ = 1, Typeset`name$$ = 
+        "\"untitled\"", Typeset`specs$$ = {{
+          Hold[$CellContext`j$$], 1, 120, 1}}, Typeset`size$$ = {
+        396.00000000000006`, {196., 200.00000000000006`}}, Typeset`update$$ = 
+        0, Typeset`initDone$$, Typeset`skipInitDone$$ = True}, 
+        DynamicBox[Manipulate`ManipulateBoxes[
+         1, StandardForm, "Variables" :> {$CellContext`j$$ = 1}, 
+          "ControllerVariables" :> {}, 
+          "OtherVariables" :> {
+           Typeset`show$$, Typeset`bookmarkList$$, Typeset`bookmarkMode$$, 
+            Typeset`animator$$, Typeset`animvar$$, Typeset`name$$, 
+            Typeset`specs$$, Typeset`size$$, Typeset`update$$, 
+            Typeset`initDone$$, Typeset`skipInitDone$$}, "Body" :> 
+          Module[{$CellContext`currentLocation$ = 
+             Part[$CellContext`locations$6425, $CellContext`j$$], \
+$CellContext`from$ = Part[$CellContext`locations$6425, 
+               Span[1, $CellContext`j$$ - 1]], $CellContext`to$ = 
+             Part[$CellContext`locations$6425, 
+               Span[2, $CellContext`j$$]]}, 
+            DensityPlot[
+             $CellContext`function$6425[$CellContext`x, $CellContext`y], \
+{$CellContext`x, $CellContext`xmin$6425, $CellContext`xmax$6425}, \
+{$CellContext`y, $CellContext`ymin$6425, $CellContext`ymax$6425}, 
+             Epilog -> {Red, 
+               PointSize[Large], 
+               Point[$CellContext`currentLocation$], Thick, 
+               Line[
+                Transpose[{$CellContext`from$, $CellContext`to$}]], Thin, 
+               Line[
+                Transpose[{
+                  Part[$CellContext`locations$6425, 
+                   Span[1, $CellContext`j$$ - 1]], 
+                  Part[$CellContext`locations$6425, 
+                   Span[2, $CellContext`j$$]]}]]}]], 
+          "Specifications" :> {{$CellContext`j$$, 1, 120, 1, 
+             AppearanceElements -> {
+              "ProgressSlider", "PlayPauseButton", "FasterSlowerButtons", 
+               "DirectionButton"}}}, 
+          "Options" :> {
+           ControlType -> Animator, AppearanceElements -> None, 
+            DefaultBaseStyle -> "Animate", DefaultLabelStyle -> 
+            "AnimateLabel", SynchronousUpdating -> True, ShrinkingDelay -> 
+            10.}, "DefaultOptions" :> {}],
+         ImageSizeCache->{448., {233., 239.}},
+         SingleEvaluation->True],
+        Deinitialization:>None,
+        DynamicModuleValues:>{},
+        SynchronousInitialization->True,
+        UndoTrackedVariables:>{Typeset`show$$, Typeset`bookmarkMode$$},
+        UnsavedVariables:>{Typeset`initDone$$},
+        UntrackedVariables:>{Typeset`size$$}], "Animate",
+       Deployed->True,
+       StripOnInput->False],
+      Manipulate`InterpretManipulate[1]]}
+   },
+   AutoDelete->False,
+   GridBoxAlignment->{"Columns" -> {{Left}}},
+   GridBoxFrame->{"Columns" -> {{True}}, "Rows" -> {{True}}},
+   GridBoxItemSize->{"Columns" -> {{36}}, "Rows" -> {{25}}}],
+  "Grid"]], "Print",
+ CellChangeTimes->{{3.890660531230723*^9, 3.890660551585157*^9}, {
+   3.890660652348973*^9, 3.890660688172921*^9}, 3.8906622063006835`*^9, {
+   3.8906642710852423`*^9, 3.890664276531824*^9}, 3.8906669060713634`*^9},
+ CellLabel->
+  "During evaluation of \
+In[19]:=",ExpressionUUID->"ce146ac6-38f5-451a-8f53-17ef64a92a90"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"dzialanieHeurystyki", "[", 
+  RowBox[{"symulowaneWy\:017carzanie", "[", 
+   RowBox[{"RosenbrockFunction2D", ",", 
+    RowBox[{"-", "5"}], ",", "5", ",", 
+    RowBox[{"-", "5"}], ",", "5", ",", "100", ",", "10", ",", "20", ",", 
+    "0.2", ",", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"RandomReal", "[", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"-", "5"}], ",", "5"}], "}"}], "]"}], ",", 
+      RowBox[{"RandomReal", "[", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"-", "5"}], ",", "5"}], "}"}], "]"}]}], "}"}]}], "]"}], 
+  "]"}]], "Input",
+ CellChangeTimes->{{3.8906605758452463`*^9, 3.8906606113412604`*^9}, {
+  3.890665941176485*^9, 3.89066597990781*^9}},
+ CellLabel->"In[45]:=",ExpressionUUID->"5da85ec6-0bb0-48c0-8f8e-422e6c645439"],
+
+Cell[BoxData[
+ TagBox[GridBox[{
+    {"\<\"fMin(1.00857, 1.01779)=0.000107404\"\>", 
+     GraphicsBox[{{}, 
+       {RGBColor[0.5, 0, 0.5], PointSize[0.012833333333333334`], 
+        AbsoluteThickness[1.6], PointBox[CompressedData["
+1:eJxTTMoPSmViYGDQBWIQDQEf7N883DHt344JDlABh5cvI+vSvGWgfA6HT+98
+tp0XkoDyBRyMGKXjLmeKQfkiDi5WouUiywWhfAmHn3M3yl63+mUP4cs4CM2/
+tIpty34oX8GBR+foxNStG6B8JYeer3POSLhGQPkqaHw1h5zY6G2vGQOgfA00
+vhYaXweNr4fGN0DjGzqsuNXQZLFPG8o3QuMbo/FN0PimaHwzNL45Gt8CjW+J
+xrdC41s7HLHdwnJKXQbKt0Hj26Lx7dD49mh8B1R+AxqfwRFNHo3P4IQmj8Zn
+cEaTR+MzuKDJo/EZXNHk0fgMbmjyCD4AUiG0Mw==
+         "]]}, {{}, {}}},
+      AspectRatio->NCache[GoldenRatio^(-1), 0.6180339887498948],
+      Axes->{True, True},
+      AxesLabel->{
+        FormBox["\"ilo\:015b\[CAcute] iteracji\"", TraditionalForm], 
+        FormBox["\"warto\:015b\[CAcute]\"", TraditionalForm]},
+      AxesOrigin->{0., 0},
+      DisplayFunction->Identity,
+      Frame->{{False, False}, {False, False}},
+      FrameLabel->{{None, None}, {None, None}},
+      FrameTicks->{{Automatic, Automatic}, {Automatic, Automatic}},
+      GridLines->{None, None},
+      GridLinesStyle->Directive[
+        GrayLevel[0.5, 0.4]],
+      ImageSize->400,
+      Method->{
+       "OptimizePlotMarkers" -> True, "OptimizePlotMarkers" -> True, 
+        "CoordinatesToolOptions" -> {"DisplayFunction" -> ({
+            Identity[
+             Part[#, 1]], 
+            Identity[
+             Part[#, 2]]}& ), "CopiedValueFunction" -> ({
+            Identity[
+             Part[#, 1]], 
+            Identity[
+             Part[#, 2]]}& )}},
+      PlotLabel->FormBox["\"przebieg \[CapitalPhi](xBest)\"", TraditionalForm],
+      PlotRange->{{0., 45.}, {0, 0.163008630431401}},
+      PlotRangeClipping->True,
+      PlotRangePadding->{{
+         Scaled[0.02], 
+         Scaled[0.02]}, {
+         Scaled[0.02], 
+         Scaled[0.05]}},
+      Ticks->{Automatic, Automatic}]},
+    {
+     GraphicsBox[{{}, {{}, {}, 
+        {RGBColor[0.5, 0, 0.5], PointSize[
+          NCache[
+           Rational[7, 360], 0.019444444444444445`]], Thickness[Large], 
+         LineBox[CompressedData["
+1:eJxTTMoPSmViYGBQA2IQ/XRKQl6Us7yD2q/bfl8WTbVnAAMFB7PcJsPPBY1Q
+vpJD79c5ZyRcI6B8FYddBZon+OeFQflqDrmx0dteMwZA+RpofC00vg4aXw+N
+b+AwnePxJMvn5lC+ocOKWw1NFvu0oXwjNL4xGt8EjW+KxjdD45uj8S3Q+JZo
+fCuHQ7ZbWE6py0D51mh8GzS+LRrfDo1vj8Z3QOU3oPEZHNHk0fgMTmjyaHwG
+ZzR5ND6DC5o8Gp/BFU0ejc/gBucDALIsmWc=
+          "]]}}, {{}, {}}},
+      AspectRatio->NCache[GoldenRatio^(-1), 0.6180339887498948],
+      Axes->{True, True},
+      AxesLabel->{
+        FormBox["\"ilo\:015b\[CAcute] iteracji\"", TraditionalForm], 
+        FormBox["\"\:015brednia warto\:015b\[CAcute]\"", TraditionalForm]},
+      AxesOrigin->{0., 0},
+      DisplayFunction->Identity,
+      Frame->{{False, False}, {False, False}},
+      FrameLabel->{{None, None}, {None, None}},
+      FrameTicks->{{Automatic, Automatic}, {Automatic, Automatic}},
+      GridLines->{None, None},
+      GridLinesStyle->Directive[
+        GrayLevel[0.5, 0.4]],
+      ImageSize->400,
+      Method->{
+       "OptimizePlotMarkers" -> True, "OptimizePlotMarkers" -> True, 
+        "CoordinatesToolOptions" -> {"DisplayFunction" -> ({
+            Identity[
+             Part[#, 1]], 
+            Identity[
+             Part[#, 2]]}& ), "CopiedValueFunction" -> ({
+            Identity[
+             Part[#, 1]], 
+            Identity[
+             Part[#, 2]]}& )}},
+      PlotLabel->FormBox[
+       "\"przebieg \[CapitalPhi] \:015brednie w iteracji\"", TraditionalForm],
+      PlotRange->{{0., 44.}, {0, 0.02112943393057711}},
+      PlotRangeClipping->True,
+      PlotRangePadding->{{
+         Scaled[0.02], 
+         Scaled[0.02]}, {
+         Scaled[0.02], 
+         Scaled[0.05]}},
+      Ticks->{Automatic, Automatic}], 
+     TagBox[
+      StyleBox[
+       DynamicModuleBox[{$CellContext`j$$ = 43, Typeset`show$$ = True, 
+        Typeset`bookmarkList$$ = {}, Typeset`bookmarkMode$$ = "Menu", 
+        Typeset`animator$$, Typeset`animvar$$ = 1, Typeset`name$$ = 
+        "\"untitled\"", Typeset`specs$$ = {{
+          Hold[$CellContext`j$$], 1, 44, 1}}, Typeset`size$$ = {
+        396.00000000000006`, {196., 200.00000000000006`}}, Typeset`update$$ = 
+        0, Typeset`initDone$$, Typeset`skipInitDone$$ = True}, 
+        DynamicBox[Manipulate`ManipulateBoxes[
+         1, StandardForm, "Variables" :> {$CellContext`j$$ = 1}, 
+          "ControllerVariables" :> {}, 
+          "OtherVariables" :> {
+           Typeset`show$$, Typeset`bookmarkList$$, Typeset`bookmarkMode$$, 
+            Typeset`animator$$, Typeset`animvar$$, Typeset`name$$, 
+            Typeset`specs$$, Typeset`size$$, Typeset`update$$, 
+            Typeset`initDone$$, Typeset`skipInitDone$$}, "Body" :> 
+          Module[{$CellContext`currentLocation$ = 
+             Part[$CellContext`locations$56191, $CellContext`j$$], \
+$CellContext`from$ = Part[$CellContext`locations$56191, 
+               Span[1, $CellContext`j$$ - 1]], $CellContext`to$ = 
+             Part[$CellContext`locations$56191, 
+               Span[2, $CellContext`j$$]]}, 
+            DensityPlot[
+             $CellContext`function$56191[$CellContext`x, $CellContext`y], \
+{$CellContext`x, $CellContext`xmin$56191, $CellContext`xmax$56191}, \
+{$CellContext`y, $CellContext`ymin$56191, $CellContext`ymax$56191}, 
+             Epilog -> {Red, 
+               PointSize[Large], 
+               Point[$CellContext`currentLocation$], Thick, 
+               Line[
+                Transpose[{$CellContext`from$, $CellContext`to$}]], Thin, 
+               Line[
+                Transpose[{
+                  Part[$CellContext`locations$56191, 
+                   Span[1, $CellContext`j$$ - 1]], 
+                  Part[$CellContext`locations$56191, 
+                   Span[2, $CellContext`j$$]]}]]}]], 
+          "Specifications" :> {{$CellContext`j$$, 1, 44, 1, 
+             AppearanceElements -> {
+              "ProgressSlider", "PlayPauseButton", "FasterSlowerButtons", 
+               "DirectionButton"}}}, 
+          "Options" :> {
+           ControlType -> Animator, AppearanceElements -> None, 
+            DefaultBaseStyle -> "Animate", DefaultLabelStyle -> 
+            "AnimateLabel", SynchronousUpdating -> True, ShrinkingDelay -> 
+            10.}, "DefaultOptions" :> {}],
+         ImageSizeCache->{448., {233., 239.}},
+         SingleEvaluation->True],
+        Deinitialization:>None,
+        DynamicModuleValues:>{},
+        SynchronousInitialization->True,
+        UndoTrackedVariables:>{Typeset`show$$, Typeset`bookmarkMode$$},
+        UnsavedVariables:>{Typeset`initDone$$},
+        UntrackedVariables:>{Typeset`size$$}], "Animate",
+       Deployed->True,
+       StripOnInput->False],
+      Manipulate`InterpretManipulate[1]]}
+   },
+   AutoDelete->False,
+   GridBoxAlignment->{"Columns" -> {{Left}}},
+   GridBoxFrame->{"Columns" -> {{True}}, "Rows" -> {{True}}},
+   GridBoxItemSize->{"Columns" -> {{36}}, "Rows" -> {{25}}}],
+  "Grid"]], "Print",
+ CellChangeTimes->{{3.890660603571201*^9, 3.8906606424587708`*^9}, {
+   3.8906606992514086`*^9, 3.890660706551401*^9}, 3.8906620265600443`*^9, 
+   3.8906622111471367`*^9, {3.890664253494043*^9, 3.8906642609606056`*^9}, {
+   3.8906659247241573`*^9, 3.8906659935236855`*^9}, 3.890666906144267*^9, {
+   3.8906671574699945`*^9, 3.890667174868453*^9}},
+ CellLabel->
+  "During evaluation of \
+In[45]:=",ExpressionUUID->"3d22e4f9-f670-4f98-87c0-6e2fc4c4ed0f"]
+}, Open  ]],
+
+Cell["\<\
+Symulowane wy\:017carzanie radzi sobie znacznie lepiej, gdy\:017c powtarza \
+dan\:0105 ilo\:015b\[CAcute] razy algorytm Metropolisa, dzi\:0119ki czemu nie \
+zatrzymuje si\:0119 w minimach lokalnych, tylko bez problemu znajduje \
+globalne. Jednak\:017ce symulowane wy\:017carzanie jest bardziej czasoch\
+\[LSlash]onne. Algorytm Metropolisa te\:017c otrzymuje dobre wyniki, \
+je\:015bli nie wpadnie w minimum lokalne. Wszystko r\[OAcute]wnie\:017c zale\
+\:017cy od podanych parametr\[OAcute]w.\
+\>", "Text",
+ CellChangeTimes->{{3.890663397773543*^9, 3.8906634892527676`*^9}, {
+  3.89066719733121*^9, 3.890667295728426*^9}, {3.8906673306395435`*^9, 
+  3.8906673595133605`*^9}, {3.8906677193320956`*^9, 
+  3.890667797463827*^9}},ExpressionUUID->"4ccbf1ae-4a9a-40f0-97f9-\
+612ee92f56e0"]
+}, Open  ]]
+},
+WindowSize->{1014.75, 1005.},
+WindowMargins->{{Automatic, -4.2000000000000455`}, {Automatic, 0}},
+Magnification:>1.1 Inherited,
+FrontEndVersion->"12.1 for Microsoft Windows (64-bit) (June 19, 2020)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"f69ef1ef-b248-4eef-92f1-7eb16c1fcbc3"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[580, 22, 186, 3, 58, "Subtitle",ExpressionUUID->"6427cda6-5590-4d1b-b288-23b067b4111f"],
+Cell[769, 27, 15879, 328, 1455, "Input",ExpressionUUID->"bfbda36e-83c7-4eb7-89af-46ec527a53cc"],
+Cell[CellGroupData[{
+Cell[16673, 359, 727, 19, 47, "Input",ExpressionUUID->"e6b6f34e-8b6a-46e8-9b72-c261e6d26d75"],
+Cell[17403, 380, 389, 9, 25, "Message",ExpressionUUID->"b8989eb3-fd6d-42f9-b466-f5fec6b97438"],
+Cell[17795, 391, 511, 11, 25, "Message",ExpressionUUID->"bcafa962-ab54-4d35-935b-cabbb8b53152"],
+Cell[18309, 404, 390, 9, 25, "Message",ExpressionUUID->"b00b4a0f-ccbb-4e25-98db-e2f57bb11249"],
+Cell[18702, 415, 511, 11, 25, "Message",ExpressionUUID->"58b33f09-47a7-45d7-85e0-fefe3f9231e3"],
+Cell[19216, 428, 509, 11, 25, "Message",ExpressionUUID->"5884c679-8a96-4aab-8df4-3bb1a82e4b73"],
+Cell[19728, 441, 450, 10, 25, "Message",ExpressionUUID->"34e73b64-9db4-4ab6-868f-ccbad44889a1"],
+Cell[20181, 453, 388, 9, 25, "Message",ExpressionUUID->"baecbfc1-063d-4d1e-a71f-e9d525fc3701"],
+Cell[20572, 464, 448, 10, 25, "Message",ExpressionUUID->"63da89d4-23f0-460e-9400-cc78f96ea011"],
+Cell[21023, 476, 420, 8, 35, "Output",ExpressionUUID->"61b29898-f96e-4e0f-8d98-b445d8affd9f"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[21492, 490, 304, 6, 93, "Subtitle",ExpressionUUID->"05d50c6e-e626-46c5-abc3-671180139697"],
+Cell[21799, 498, 19027, 386, 2030, "Input",ExpressionUUID->"837acd29-1056-41b7-ab95-f8c02fbacc3b"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[40863, 889, 334, 7, 128, "Subtitle",ExpressionUUID->"2062b079-4c9b-4249-99b3-aa5d655bae9f"],
+Cell[41200, 898, 2949, 95, 198, "Input",ExpressionUUID->"5075ccb0-daca-47ab-b1e4-70fbd59d04fe"],
+Cell[44152, 995, 7214, 171, 743, "Input",ExpressionUUID->"68ef5ac8-bc61-419d-85bf-dcd1657cadbc"],
+Cell[51369, 1168, 162, 3, 38, "Text",ExpressionUUID->"2d95f01e-c386-4e1e-ac8d-9be863b99172"],
+Cell[CellGroupData[{
+Cell[51556, 1175, 773, 20, 68, "Input",ExpressionUUID->"a4099ef6-e0ec-4f56-9b7a-f51b1948551d"],
+Cell[52332, 1197, 8143, 179, 879, "Print",ExpressionUUID->"f563b6c8-e800-45b9-9103-243d12960919"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[60512, 1381, 997, 23, 68, "Input",ExpressionUUID->"e2af1c96-e3b3-4ff4-bd4c-9aa12a7494d2"],
+Cell[61512, 1406, 8021, 176, 879, "Print",ExpressionUUID->"505611a1-da64-4f4a-aa4c-2ec0ebcc217b"]
+}, Open  ]],
+Cell[69548, 1585, 185, 3, 38, "Text",ExpressionUUID->"f6d3c8e5-c65b-4543-b0c7-d7413a763f54"],
+Cell[CellGroupData[{
+Cell[69758, 1592, 1229, 26, 68, "Input",ExpressionUUID->"0796ceca-32d4-407f-ae94-9d8f596c6492"],
+Cell[70990, 1620, 7874, 172, 867, "Print",ExpressionUUID->"6227b7cc-e8c8-4b61-8f25-6922b6c22a67"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[78901, 1797, 1043, 23, 68, "Input",ExpressionUUID->"dcc60d09-4780-452d-b0bf-8ad206210f30"],
+Cell[79947, 1822, 7515, 166, 864, "Print",ExpressionUUID->"2fe34509-63e1-429d-885d-e027112276ec"]
+}, Open  ]],
+Cell[87477, 1991, 166, 3, 38, "Text",ExpressionUUID->"e6c691f9-9473-454c-87fd-71ff2323625b"],
+Cell[CellGroupData[{
+Cell[87668, 1998, 780, 20, 68, "Input",ExpressionUUID->"0711dc6e-6c40-43f9-ae14-dd9b0bbe02c5"],
+Cell[88451, 2020, 8792, 189, 879, "Print",ExpressionUUID->"ce146ac6-38f5-451a-8f53-17ef64a92a90"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[97280, 2214, 795, 20, 68, "Input",ExpressionUUID->"5da85ec6-0bb0-48c0-8f8e-422e6c645439"],
+Cell[98078, 2236, 7376, 165, 877, "Print",ExpressionUUID->"3d22e4f9-f670-4f98-87c0-6e2fc4c4ed0f"]
+}, Open  ]],
+Cell[105469, 2404, 792, 13, 114, "Text",ExpressionUUID->"4ccbf1ae-4a9a-40f0-97f9-612ee92f56e0"]
+}, Open  ]]
+}
+]
+*)
+
