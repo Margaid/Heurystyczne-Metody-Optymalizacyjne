@@ -1,0 +1,1637 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     71247,       1629]
+NotebookOptionsPosition[     67384,       1561]
+NotebookOutlinePosition[     67897,       1579]
+CellTagsIndexPosition[     67854,       1576]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["1. Zaimplementuj ewolucj\:0119 r\[OAcute]\:017cnicow\:0105.", "Subtitle",
+ CellChangeTimes->{{3.892371708106992*^9, 
+  3.8923717093757286`*^9}},ExpressionUUID->"5eaf5857-87e5-4210-bfae-\
+5470ca81b39b"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"differentialEvolution", "[", 
+    RowBox[{
+    "f_", ",", "basePopulation_", ",", " ", "populationSize_", ",", " ", 
+     "numberOfGenerations_", ",", " ", "lowerLimit_", ",", "upperLimit_"}], 
+    "]"}], ":=", 
+   RowBox[{"Module", "[", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"population", "=", 
+        RowBox[{"{", "}"}]}], ",", 
+       RowBox[{"NP", "=", "populationSize"}], ",", "n", ",", 
+       RowBox[{"g", "=", "numberOfGenerations"}], ",", "F", ",", "pc", ",", 
+       "childEvaluation", ",", " ", "valueOfBestChild", ",", " ", "bestChild",
+        ",", 
+       RowBox[{"bestChildren", "=", 
+        RowBox[{"{", "}"}]}], ",", 
+       RowBox[{"bestValues", "=", 
+        RowBox[{"{", "}"}]}], ",", "i", ",", "j", ",", "  ", "t", ",", "xp", 
+       ",", "xq", ",", "xr", ",", "v", ",", "u", ",", "Jr", ",", "e", ",", 
+       RowBox[{"newPopulation", "=", 
+        RowBox[{"{", "}"}]}], ",", " ", 
+       RowBox[{"means", "=", 
+        RowBox[{"{", "}"}]}], ",", "bestNewPopulation"}], "}"}], ",", 
+     "\[IndentingNewLine]", "\[IndentingNewLine]", 
+     RowBox[{"(*", " ", 
+      RowBox[{"n", " ", "\[Rule]", " ", 
+       RowBox[{
+       "liczba", " ", "zmiennych", " ", "w", " ", "funkcji", " ", "celu"}]}], 
+      "*)"}], "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"n", "=", "2"}], ";", "\[IndentingNewLine]", 
+      RowBox[{"F", "=", "0.5"}], ";", " ", 
+      RowBox[{"(*", " ", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"sta\[LSlash]a", " ", "F"}], " ", "\[Element]", " ", 
+         RowBox[{"<", "0"}]}], ",", 
+        RowBox[{"2", ">"}]}], " ", "*)"}], "\[IndentingNewLine]", 
+      RowBox[{"pc", "=", "0.7"}], ";", " ", 
+      RowBox[{"(*", " ", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"prawdopodobie\:0144stwo", " ", "krzy\:017cowania"}], " ", 
+         "<", "0"}], ",", 
+        RowBox[{"1", ">"}]}], " ", "*)"}], "\[IndentingNewLine]", 
+      "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{"stworzenie", " ", "populacji", " ", "startowej"}], "*)"}], 
+      "\[IndentingNewLine]", 
+      RowBox[{"population", "=", "basePopulation"}], ";", 
+      "\[IndentingNewLine]", "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{
+        RowBox[{
+        "najlepsze", " ", "rozwi\:0105zanie", " ", "z", " ", "populacji", " ",
+          "startowej"}], " ", "\[Rule]", " ", 
+        RowBox[{"pierwszy", " ", "osobnik"}]}], "*)"}], "\[IndentingNewLine]", 
+      RowBox[{"bestChild", "=", " ", 
+       RowBox[{
+       "population", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}]}],
+       ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{"warto\:015b\[CAcute]", " ", "najlepszego", " ", "dziecka"}], 
+       "*)"}], "\[IndentingNewLine]", 
+      RowBox[{"valueOfBestChild", " ", "=", " ", 
+       RowBox[{"f", " ", "@@", " ", "bestChild"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{
+       "dodanie", " ", "do", " ", "odpowiednich", " ", "list", " ", 
+        "powy\:017cszych", " ", "zmiennych"}], "*)"}], "\[IndentingNewLine]", 
+      RowBox[{"bestChildren", "=", 
+       RowBox[{"Append", "[", 
+        RowBox[{"bestChildren", ",", "bestChild"}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"bestValues", "=", 
+       RowBox[{"Append", "[", 
+        RowBox[{"bestValues", ",", "valueOfBestChild"}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"t", "=", "0"}], ";", "\[IndentingNewLine]", 
+      "\[IndentingNewLine]", 
+      RowBox[{"Do", "[", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"i", "=", "1"}], ";", "\[IndentingNewLine]", 
+         "\[IndentingNewLine]", 
+         RowBox[{"Do", "[", "\[IndentingNewLine]", 
+          RowBox[{"(*", 
+           RowBox[{
+            RowBox[{
+            "selekcja", " ", "3", " ", "losowcyh", " ", "osobnik\[OAcute]w"}],
+             ",", " ", 
+            RowBox[{"pr\[OAcute]cz", " ", "xi"}]}], " ", "*)"}], 
+          "\[IndentingNewLine]", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"idx", "=", 
+             RowBox[{"RandomSample", "[", 
+              RowBox[{
+               RowBox[{"Complement", "[", 
+                RowBox[{
+                 RowBox[{"Range", "[", "NP", "]"}], ",", 
+                 RowBox[{"{", "i", "}"}]}], "]"}], ",", "3"}], "]"}]}], ";", 
+            "\n", "\t\t", 
+            RowBox[{"xp", "=", 
+             RowBox[{"population", "[", 
+              RowBox[{"[", 
+               RowBox[{"idx", "[", 
+                RowBox[{"[", "1", "]"}], "]"}], "]"}], "]"}]}], ";", "\n", 
+            "\t\t", 
+            RowBox[{"xq", "=", 
+             RowBox[{"population", "[", 
+              RowBox[{"[", 
+               RowBox[{"idx", "[", 
+                RowBox[{"[", "2", "]"}], "]"}], "]"}], "]"}]}], ";", "\n", 
+            "\t\t", 
+            RowBox[{"xr", "=", 
+             RowBox[{"population", "[", 
+              RowBox[{"[", 
+               RowBox[{"idx", "[", 
+                RowBox[{"[", "3", "]"}], "]"}], "]"}], "]"}]}], ";", 
+            "\[IndentingNewLine]", "\[IndentingNewLine]", 
+            RowBox[{"(*", 
+             RowBox[{"mutacja", " ", "-", " ", 
+              RowBox[{"generowanie", " ", "wektora"}], "-", "dawcy"}], "*)"}],
+             "\[IndentingNewLine]", 
+            RowBox[{"v", "=", 
+             RowBox[{"Clip", "[", 
+              RowBox[{
+               RowBox[{"xp", "+", 
+                RowBox[{"F", " ", 
+                 RowBox[{"(", 
+                  RowBox[{"xq", "-", "xr"}], ")"}]}]}], ",", 
+               RowBox[{"{", 
+                RowBox[{"lowerLimit", ",", "upperLimit"}], "}"}]}], "]"}]}], 
+            ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+            RowBox[{"(*", "krzy\:017cowanie", " ", "*)"}], 
+            "\[IndentingNewLine]", 
+            RowBox[{"(*", 
+             RowBox[{"losowanie", " ", "indeksu", " ", "Jr"}], " ", "*)"}], 
+            "\[IndentingNewLine]", 
+            RowBox[{"Jr", "=", 
+             RowBox[{"RandomInteger", "[", 
+              RowBox[{"{", 
+               RowBox[{"1", ",", "n"}], "}"}], "]"}]}], ";", 
+            "\[IndentingNewLine]", 
+            RowBox[{"(*", " ", 
+             RowBox[{"wektor", " ", "liczb", " ", "pseudolosowych"}], " ", 
+             "*)"}], "\[IndentingNewLine]", 
+            RowBox[{"e", "=", 
+             RowBox[{"RandomReal", "[", 
+              RowBox[{
+               RowBox[{"{", 
+                RowBox[{"0", ",", "1"}], "}"}], ",", "n"}], "]"}]}], ";", 
+            "\[IndentingNewLine]", "\[IndentingNewLine]", 
+            RowBox[{"u", "=", 
+             RowBox[{"Table", "[", 
+              RowBox[{
+               RowBox[{"If", "[", 
+                RowBox[{
+                 RowBox[{
+                  RowBox[{
+                   RowBox[{"e", "[", 
+                    RowBox[{"[", "j", "]"}], "]"}], "\[LessEqual]", "pc"}], "||", 
+                  RowBox[{"j", "\[Equal]", "Jr"}]}], ",", 
+                 RowBox[{"v", "[", 
+                  RowBox[{"[", "j", "]"}], "]"}], ",", 
+                 RowBox[{"population", "[", 
+                  RowBox[{"[", 
+                   RowBox[{"i", ",", "j"}], "]"}], "]"}]}], "]"}], ",", 
+               RowBox[{"{", 
+                RowBox[{"j", ",", "n"}], "}"}]}], "]"}]}], ";", 
+            "\[IndentingNewLine]", "\n", "\t\t", 
+            RowBox[{"(*", "selekcja", "*)"}], "\[IndentingNewLine]", 
+            RowBox[{"If", "[", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"f", "[", 
+                RowBox[{
+                 RowBox[{
+                 "u", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], 
+                 ",", 
+                 RowBox[{
+                 "u", "\[LeftDoubleBracket]", "2", 
+                  "\[RightDoubleBracket]"}]}], "]"}], "\[GreaterEqual]", " ", 
+               RowBox[{"f", "[", 
+                RowBox[{
+                 RowBox[{"population", "\[LeftDoubleBracket]", 
+                  RowBox[{"i", ",", "1"}], "\[RightDoubleBracket]"}], ",", 
+                 RowBox[{"population", "\[LeftDoubleBracket]", 
+                  RowBox[{"i", ",", "2"}], "\[RightDoubleBracket]"}]}], 
+                "]"}]}], ",", 
+              RowBox[{"newPopulation", "=", 
+               RowBox[{"Append", "[", 
+                RowBox[{"newPopulation", ",", "u"}], "]"}]}], ",", 
+              RowBox[{"newPopulation", "=", 
+               RowBox[{"Append", "[", 
+                RowBox[{"newPopulation", ",", 
+                 RowBox[{
+                 "population", "\[LeftDoubleBracket]", "i", 
+                  "\[RightDoubleBracket]"}]}], "]"}]}]}], "]"}], ";", 
+            "\[IndentingNewLine]", "\[IndentingNewLine]", 
+            RowBox[{"i", "++"}], ";"}], "\[IndentingNewLine]", ",", 
+           RowBox[{"{", 
+            RowBox[{"i", ",", "1", ",", "NP"}], "}"}]}], "]"}], ";", 
+         "\[IndentingNewLine]", "\[IndentingNewLine]", 
+         RowBox[{"(*", 
+          RowBox[{
+          "najlepsze", " ", "rozwi\:0105zanie", " ", "w", " ", "nowej", " ", 
+           "populacji"}], " ", "*)"}], "\[IndentingNewLine]", 
+         "\[IndentingNewLine]", 
+         RowBox[{"bestNewPopulation", "=", 
+          RowBox[{"MaximalBy", "[", 
+           RowBox[{"newPopulation", ",", 
+            RowBox[{
+             RowBox[{"f", "@@", "#"}], "&"}], ",", "1"}], "]"}]}], ";", 
+         "\[IndentingNewLine]", 
+         RowBox[{"(*", 
+          RowBox[{
+          "sprawdzenie", " ", "czy", " ", "to", " ", "rozwi\:0105zanie", " ", 
+           "jest", " ", "lepsze", " ", "od", " ", "najlepszego", " ", 
+           "rozwi\:0105zania", " ", "og\[OAcute]lnie"}], " ", "*)"}], 
+         "\[IndentingNewLine]", 
+         RowBox[{"If", "[", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"f", " ", "[", 
+             RowBox[{
+              RowBox[{"bestNewPopulation", "\[LeftDoubleBracket]", 
+               RowBox[{"1", ",", "1"}], "\[RightDoubleBracket]"}], ",", 
+              RowBox[{"bestNewPopulation", "\[LeftDoubleBracket]", 
+               RowBox[{"1", ",", "2"}], "\[RightDoubleBracket]"}]}], "]"}], 
+            "\[GreaterEqual]", " ", 
+            RowBox[{"f", "[", 
+             RowBox[{
+              RowBox[{
+              "bestChild", "\[LeftDoubleBracket]", "1", 
+               "\[RightDoubleBracket]"}], ",", 
+              RowBox[{
+              "bestChild", "\[LeftDoubleBracket]", "2", 
+               "\[RightDoubleBracket]"}]}], "]"}]}], ",", 
+           RowBox[{"bestChild", "=", 
+            RowBox[{
+            "bestNewPopulation", "\[LeftDoubleBracket]", "1", 
+             "\[RightDoubleBracket]"}]}]}], "]"}], ";", " ", 
+         "\[IndentingNewLine]", "\[IndentingNewLine]", 
+         RowBox[{"valueOfBestChild", "=", 
+          RowBox[{"f", "[", 
+           RowBox[{
+            RowBox[{
+            "bestChild", "\[LeftDoubleBracket]", "1", 
+             "\[RightDoubleBracket]"}], ",", 
+            RowBox[{
+            "bestChild", "\[LeftDoubleBracket]", "2", 
+             "\[RightDoubleBracket]"}]}], "]"}]}], ";", "\[IndentingNewLine]", 
+         RowBox[{"(*", 
+          RowBox[{
+          "dodanie", " ", "odpowiednich", " ", "warto\:015bci", " ", "do", 
+           " ", "list"}], " ", "*)"}], "\[IndentingNewLine]", 
+         RowBox[{"bestChildren", "=", 
+          RowBox[{"Append", "[", 
+           RowBox[{"bestChildren", ",", "bestChild"}], "]"}]}], ";", "\n", 
+         "\t", 
+         RowBox[{"bestValues", "=", 
+          RowBox[{"Append", "[", 
+           RowBox[{"bestValues", ",", "valueOfBestChild"}], "]"}]}], ";", 
+         "\[IndentingNewLine]", 
+         RowBox[{"(*", 
+          RowBox[{
+          "policzenie", " ", "\:015bredniej", " ", "z", " ", "nowej", " ", 
+           "populacji"}], " ", "*)"}], "\[IndentingNewLine]", 
+         RowBox[{"means", "=", 
+          RowBox[{"Append", "[", 
+           RowBox[{"means", ",", 
+            RowBox[{
+             RowBox[{"Total", "[", 
+              RowBox[{"Map", "[", 
+               RowBox[{
+                RowBox[{
+                 RowBox[{"f", " ", "@@", " ", "#"}], " ", "&"}], ",", 
+                "newPopulation"}], "]"}], "]"}], "/", 
+             RowBox[{"Length", "[", "newPopulation", "]"}]}]}], "]"}]}], ";", 
+         "\[IndentingNewLine]", 
+         RowBox[{"population", "=", "newPopulation"}], ";", 
+         "\[IndentingNewLine]", 
+         RowBox[{"newPopulation", "=", 
+          RowBox[{"{", "}"}]}], ";", "\[IndentingNewLine]", 
+         RowBox[{"t", "++"}], ";"}], "\[IndentingNewLine]", 
+        RowBox[{"(*", 
+         RowBox[{
+          RowBox[{"warunek", " ", "zatrzymania"}], " ", "-", " ", 
+          RowBox[{"liczba", " ", "generacji"}]}], " ", "*)"}], 
+        "\[IndentingNewLine]", ",", 
+        RowBox[{"{", 
+         RowBox[{"t", ",", "1", ",", "g"}], "}"}]}], "]"}], ";", 
+      "\[IndentingNewLine]", "\[IndentingNewLine]", 
+      RowBox[{"(*", " ", 
+       RowBox[{
+       "zwr\[OAcute]cenie", " ", "potrzebnych", " ", "warto\:015bci"}], " ", 
+       "*)"}], "\[IndentingNewLine]", 
+      RowBox[{"Return", "[", 
+       RowBox[{"{", 
+        RowBox[{
+        "bestChild", ",", "valueOfBestChild", ",", "bestValues", ",", "means",
+          ",", "bestChildren", ",", "f", ",", "lowerLimit", ",", "upperLimit",
+          ",", "lowerLimit", ",", "upperLimit", ",", "g"}], "}"}], "]"}], 
+      ";"}]}], "\[IndentingNewLine]", "]"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.8924539006321435`*^9, 3.892453906364831*^9}, {
+   3.8924562113668337`*^9, 3.8924562585098357`*^9}, {3.8924562937070527`*^9, 
+   3.892456527888771*^9}, 3.8924566396543055`*^9, 3.8924569140824175`*^9, {
+   3.8924569734768233`*^9, 3.892456984699546*^9}, {3.892457019849538*^9, 
+   3.8924570479698634`*^9}, {3.89245717995253*^9, 3.892457187945918*^9}, {
+   3.8924579440176764`*^9, 3.8924579812169647`*^9}, {3.892458117854966*^9, 
+   3.892458142555885*^9}, {3.8924581777881927`*^9, 3.8924583052180595`*^9}, {
+   3.8924583582001104`*^9, 3.892458455799073*^9}, {3.8924585786485295`*^9, 
+   3.892458582344927*^9}, {3.8924586217281437`*^9, 3.8924586832669063`*^9}, {
+   3.892458858334732*^9, 3.8924588889167137`*^9}, {3.8924589898048105`*^9, 
+   3.892459003424871*^9}, {3.8924590975804768`*^9, 3.8924591011056566`*^9}, 
+   3.8924591519766445`*^9, {3.892459185859104*^9, 3.8924592271443048`*^9}, {
+   3.8924593338849277`*^9, 3.8924593341848145`*^9}, {3.8924594419449005`*^9, 
+   3.8924594859297104`*^9}, {3.8924759310911894`*^9, 
+   3.8924759467259083`*^9}, {3.8924760962768297`*^9, 3.892476131289855*^9}, {
+   3.8924764639093018`*^9, 3.8924764712725344`*^9}, 3.8924765531296177`*^9, {
+   3.8924767625012627`*^9, 3.8924767678113966`*^9}, {3.8924768020222406`*^9, 
+   3.8924768678624535`*^9}, {3.8924769150504336`*^9, 3.892476989666198*^9}, {
+   3.8924770322021523`*^9, 3.892477086144671*^9}, {3.892477125675806*^9, 
+   3.892477125935051*^9}, {3.892477171835291*^9, 3.892477203116655*^9}, 
+   3.8924773092417235`*^9, {3.892477360416184*^9, 3.8924774126397505`*^9}, {
+   3.8924783162411456`*^9, 3.892478351149498*^9}, {3.8924786246288753`*^9, 
+   3.892478786584085*^9}, {3.8924788274120317`*^9, 3.892478882418954*^9}, {
+   3.8924789152413793`*^9, 3.8924789698174973`*^9}, {3.8924790834748545`*^9, 
+   3.8924791240894146`*^9}, {3.8924791869372535`*^9, 3.892479256569974*^9}, {
+   3.892479295454998*^9, 3.8924795524701843`*^9}, {3.892479633990836*^9, 
+   3.8924796348151026`*^9}, {3.8924797483550863`*^9, 
+   3.8924798108750644`*^9}, {3.892479865974851*^9, 3.892479934718049*^9}, {
+   3.8924799731243525`*^9, 3.8924800262900105`*^9}, {3.892480067149784*^9, 
+   3.892480177919355*^9}, {3.892480215265935*^9, 3.892480296735058*^9}, {
+   3.892480340309235*^9, 3.8924803407873716`*^9}, {3.892480411667449*^9, 
+   3.892480413167472*^9}, 3.8924804453226466`*^9, {3.8924805313315215`*^9, 
+   3.8924805656250935`*^9}, {3.892481239926357*^9, 3.892481307495344*^9}, {
+   3.8924813436048965`*^9, 3.892481358684161*^9}, {3.8924815590992317`*^9, 
+   3.8924816164358745`*^9}, {3.892481652974408*^9, 3.892481681845982*^9}, {
+   3.892481723377124*^9, 3.8924817462380595`*^9}, {3.892481799633233*^9, 
+   3.8924818415783777`*^9}, {3.892481887728627*^9, 3.8924818952085166`*^9}, 
+   3.8924819299591856`*^9, {3.8924819742248244`*^9, 3.8924821110890102`*^9}, {
+   3.8924822143828387`*^9, 3.8924822423751593`*^9}, {3.8924822931875887`*^9, 
+   3.892482407189977*^9}, {3.892482443177317*^9, 3.892482513157169*^9}, {
+   3.8924826501196003`*^9, 3.8924826583892584`*^9}, {3.8924827147695265`*^9, 
+   3.8924827433750668`*^9}, {3.892482856066577*^9, 3.892482952039168*^9}, 
+   3.8924830025595026`*^9, {3.89248303740652*^9, 3.892483048415022*^9}, {
+   3.8924831241649027`*^9, 3.892483170736474*^9}, {3.8924832684761205`*^9, 
+   3.8924833544560347`*^9}, {3.8924834136162796`*^9, 3.892483513404262*^9}, 
+   3.8924836622849007`*^9, {3.8930544419965677`*^9, 3.8930544708677316`*^9}},
+ CellLabel->"In[1]:=",ExpressionUUID->"cfe265ca-d5a9-4eb9-983d-ecc2927c956d"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"SphericFunction2D", "[", 
+    RowBox[{"x_", ",", "y_"}], "]"}], ":=", 
+   RowBox[{"-", 
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{"x", "^", "2"}], "+", 
+      RowBox[{"y", "^", "2"}]}], ")"}]}]}], ";"}]], "Input",
+ CellLabel->"In[2]:=",ExpressionUUID->"3d46fabe-8919-4900-ae55-d761a89e649b"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"differentialEvolution", "[", 
+  RowBox[{"SphericFunction2D", ",", " ", "6", ",", "20", ",", " ", 
+   RowBox[{"-", "5"}], ",", "5"}], "]"}]], "Input",
+ CellChangeTimes->{{3.892458942893942*^9, 3.8924589703903008`*^9}, {
+  3.892459012077286*^9, 3.8924590127815104`*^9}, {3.892459123074708*^9, 
+  3.892459126743599*^9}, {3.8924762315523553`*^9, 3.8924762408163633`*^9}, {
+  3.8924813714848537`*^9, 3.892481378891384*^9}},
+ CellLabel->"In[3]:=",ExpressionUUID->"85438001-2e5f-41e0-80eb-37685c5d3a0f"],
+
+Cell[BoxData[
+ RowBox[{"differentialEvolution", "[", 
+  RowBox[{"SphericFunction2D", ",", "6", ",", "20", ",", 
+   RowBox[{"-", "5"}], ",", "5"}], "]"}]], "Output",
+ CellChangeTimes->{
+  3.892459013656869*^9, {3.8924590818803363`*^9, 3.892459127230771*^9}, {
+   3.8924594628200502`*^9, 3.8924594884107485`*^9}, {3.8924761040494204`*^9, 
+   3.892476133781433*^9}, {3.89247623223794*^9, 3.8924762412533007`*^9}, {
+   3.892477368915946*^9, 3.892477416486639*^9}, 3.892478267843418*^9, 
+   3.8924795590274687`*^9, 3.8924796408050747`*^9, 3.8924798226780324`*^9, {
+   3.892479897460184*^9, 3.892479909268366*^9}, 3.892479939422304*^9, {
+   3.8924799859207287`*^9, 3.8924800286148615`*^9}, 3.8924800927674856`*^9, 
+   3.8924801845906887`*^9, 3.8924802201809864`*^9, 3.892480268588373*^9, 
+   3.892480302697729*^9, 3.8924803441187434`*^9, 3.8924804164849453`*^9, 
+   3.89248044805941*^9, 3.892480568744982*^9, 3.892481323559976*^9, {
+   3.892481372267991*^9, 3.89248137995201*^9}, 3.8924815859141026`*^9, 
+   3.8924816186846523`*^9, 3.892481684069083*^9, 3.8924817493093157`*^9, {
+   3.8924818050871544`*^9, 3.8924818445255065`*^9}, 3.892481899334431*^9, 
+   3.892481983649325*^9, 3.8924820157962584`*^9, {3.892482090105899*^9, 
+   3.892482114468102*^9}, 3.8924822188252125`*^9, 3.8924822527176514`*^9, 
+   3.892482305524863*^9, 3.89248234395953*^9, 3.892482376324857*^9, 
+   3.8924824101769233`*^9, {3.892482462747943*^9, 3.8924824771076293`*^9}, 
+   3.892482516108857*^9, {3.8924826531472216`*^9, 3.892482682118035*^9}, {
+   3.89248271738783*^9, 3.8924827461051955`*^9}, {3.892482873736332*^9, 
+   3.8924828972249565`*^9}, 3.8924829291689167`*^9, 3.8924830061164293`*^9, 
+   3.89248305354497*^9, {3.8924831290262375`*^9, 3.892483172716506*^9}, 
+   3.8924832708690453`*^9, 3.892483328745331*^9, 3.892483363286662*^9, {
+   3.8924834185649877`*^9, 3.8924834491583776`*^9}, 3.8924835233534575`*^9, 
+   3.892483669514752*^9, 3.892483801254292*^9, 3.892484284096569*^9, 
+   3.8924848876974373`*^9, 3.8924850108139553`*^9, 3.892485265813998*^9, 
+   3.8924853126542573`*^9, 3.892485634642563*^9, 3.8924857966567626`*^9, 
+   3.8924859200485415`*^9, 3.8924859665295315`*^9, {3.8924860897757487`*^9, 
+   3.892486113395544*^9}, {3.892486213079128*^9, 3.8924862441508656`*^9}, {
+   3.8924863154049377`*^9, 3.892486334056456*^9}, {3.8924863836186724`*^9, 
+   3.892486404084913*^9}, 3.892486773595008*^9, 3.8928941043382635`*^9, 
+   3.8928949870645294`*^9, {3.8928961224388685`*^9, 3.892896143520403*^9}, 
+   3.892896824231105*^9, 3.893053986259186*^9, 3.8930545429197206`*^9, 
+   3.8930550801712513`*^9, 3.893056259942152*^9},
+ CellLabel->"Out[3]=",ExpressionUUID->"bb10be46-9afe-4eef-872c-87ce2b8c5f78"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+2. Przetestuj sw\[OAcute]j program na funkcjach testowych (zgodnie z zasadami \
+omawianymi w module 1) nie zapominaj\:0105c o funkcjach wielomodalnych. \
+Zinterpretuj wyniki.\
+\>", "Subtitle",
+ CellChangeTimes->{{3.8923717219665475`*^9, 
+  3.8923717268080606`*^9}},ExpressionUUID->"dfc2793b-c82c-4621-a904-\
+f6ca762f4816"],
+
+Cell["rozmiar populacji >= 4 !!!!!!!!!!!!!!!", "Text",
+ CellChangeTimes->{{3.892456155026551*^9, 
+  3.8924561627448993`*^9}},ExpressionUUID->"f7d6ca2e-f180-4125-9f9f-\
+1de11fe6a689"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"dzialanieHeurystyki", "[", "algorithm_", "]"}], ":=", 
+  RowBox[{"Module", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{
+     "bestPointOverall", ",", "bestValueOverall", ",", "results", ",", 
+      "means", ",", "locations", ",", "animation", ",", "optimum", ",", 
+      "resultsPlot", ",", "meansPlot", ",", "xmin", ",", "xmax", ",", "ymin", 
+      ",", "ymax", ",", "function", ",", "iterations"}], "}"}], ",", 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+       "bestPointOverall", ",", "bestValueOverall", ",", "results", ",", 
+        "means", ",", "locations", ",", "function", ",", "xmin", ",", "xmax", 
+        ",", "ymin", ",", "ymax", ",", "iterations"}], "}"}], "=", 
+      "algorithm"}], ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+     RowBox[{"(*", " ", 
+      RowBox[{"znalezione", " ", 
+       RowBox[{"optimum", "\\", "small"}], 
+       RowBox[{"{", 
+        RowBox[{"x_", 
+         RowBox[{"{", "max", "}"}]}], "}"}], " ", "oraz", " ", 
+       "warto\:015b\[CAcute]", " ", "funkcji", " ", "celu", " ", "w", " ", 
+       "tym", " ", "punkcie"}], "*)"}], "\[IndentingNewLine]", 
+     RowBox[{"optimum", "=", 
+      RowBox[{"StringJoin", "[", 
+       RowBox[{"\"\<fMin(\>\"", ",", 
+        RowBox[{"ToString", "[", 
+         RowBox[{
+         "bestPointOverall", "\[LeftDoubleBracket]", "1", 
+          "\[RightDoubleBracket]"}], "]"}], ",", "\"\<, \>\"", ",", 
+        RowBox[{"ToString", "[", 
+         RowBox[{
+         "bestPointOverall", "\[LeftDoubleBracket]", "2", 
+          "\[RightDoubleBracket]"}], "]"}], ",", "\"\<)=\>\"", ",", 
+        RowBox[{"ToString", "[", "bestValueOverall", "]"}]}], "]"}]}], ";", 
+     "\[IndentingNewLine]", "\[IndentingNewLine]", 
+     RowBox[{"(*", " ", 
+      RowBox[{
+      "przebieg", " ", "warto\:015bci", " ", "optymalnej", " ", "w", " ", 
+       "kolejnych", " ", 
+       RowBox[{"iteracjach", "\\", "small"}], 
+       RowBox[{"{", 
+        RowBox[{"x_", 
+         RowBox[{"{", 
+          RowBox[{"best", ",", "i"}], "}"}]}], "}"}]}], " ", "*)"}], 
+     "\[IndentingNewLine]", 
+     RowBox[{"resultsPlot", "=", 
+      RowBox[{"ListPlot", "[", 
+       RowBox[{"results", ",", 
+        RowBox[{"PlotStyle", "\[Rule]", 
+         RowBox[{"{", "Purple", "}"}]}], ",", 
+        RowBox[{"AxesLabel", "\[Rule]", 
+         RowBox[{"{", 
+          RowBox[{
+          "\"\<ilo\:015b\[CAcute] iteracji\>\"", ",", 
+           "\"\<warto\:015b\[CAcute]\>\""}], "}"}]}], ",", " ", 
+        RowBox[{
+        "PlotLabel", "\[Rule]", "\"\<przebieg \[CapitalPhi](xBest)\>\""}], 
+        ",", 
+        RowBox[{"ImageSize", "\[Rule]", "400"}]}], " ", "]"}]}], ";", 
+     "\[IndentingNewLine]", "\[IndentingNewLine]", 
+     RowBox[{"(*", " ", 
+      RowBox[{"przebieg", " ", "warto\:015bci", " ", "\:015bredniej", " ", 
+       RowBox[{"(", 
+        RowBox[{"w", " ", "populacji"}], ")"}], " ", "w", " ", "kolejnych", 
+       " ", 
+       RowBox[{"iteracjach", "\\", "small"}], 
+       RowBox[{"{", 
+        RowBox[{"x_", 
+         RowBox[{"{", 
+          RowBox[{"av", ",", "i"}], "}"}]}], "}"}]}], " ", "*)"}], 
+     "\[IndentingNewLine]", 
+     RowBox[{"meansPlot", "=", 
+      RowBox[{"ListLinePlot", "[", 
+       RowBox[{"means", ",", 
+        RowBox[{"PlotStyle", "\[Rule]", 
+         RowBox[{"{", 
+          RowBox[{"Purple", ",", "Thick"}], "}"}]}], ",", 
+        RowBox[{"AxesLabel", "\[Rule]", 
+         RowBox[{"{", 
+          RowBox[{
+          "\"\<ilo\:015b\[CAcute] iteracji\>\"", ",", 
+           "\"\<\:015brednia warto\:015b\[CAcute]\>\""}], "}"}]}], ",", 
+        RowBox[{
+        "PlotLabel", "\[Rule]", 
+         "\"\<przebieg \[CapitalPhi] \:015brednie w iteracji\>\""}], " ", ",", 
+        RowBox[{"ImageSize", "\[Rule]", "400"}]}], "]"}]}], ";", 
+     "\[IndentingNewLine]", 
+     RowBox[{"(*", " ", 
+      RowBox[{"ruch", " ", 
+       RowBox[{"punktu", "\\", "small"}], 
+       RowBox[{"{", 
+        RowBox[{"x_", 
+         RowBox[{"{", 
+          RowBox[{"best", ",", "i"}], "}"}]}], "}"}], " ", "na", " ", 
+       "p\[LSlash]aszczy\:017anie", " ", 
+       RowBox[{"(", 
+        RowBox[{"dla", " ", "problem\[OAcute]w", " ", "2", "D"}], ")"}]}], 
+      " ", "*)"}], "\[IndentingNewLine]", 
+     RowBox[{"animation", "=", 
+      RowBox[{"Animate", "[", 
+       RowBox[{
+        RowBox[{"Module", "[", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"currentLocation", "=", 
+             RowBox[{
+             "locations", "\[LeftDoubleBracket]", "j", 
+              "\[RightDoubleBracket]"}]}], ",", 
+            RowBox[{"from", "=", 
+             RowBox[{"locations", "\[LeftDoubleBracket]", 
+              RowBox[{"1", ";;", 
+               RowBox[{"j", "-", "1"}]}], "\[RightDoubleBracket]"}]}], ",", 
+            RowBox[{"to", "=", 
+             RowBox[{"locations", "[", 
+              RowBox[{"[", 
+               RowBox[{"2", ";;", "j"}], "]"}], "]"}]}]}], "}"}], ",", 
+          RowBox[{"DensityPlot", "[", 
+           RowBox[{
+            RowBox[{"function", "[", 
+             RowBox[{"x", ",", "y"}], "]"}], ",", 
+            RowBox[{"{", 
+             RowBox[{"x", ",", "xmin", ",", "xmax"}], "}"}], ",", 
+            RowBox[{"{", 
+             RowBox[{"y", ",", "ymin", ",", "ymax"}], "}"}], ",", 
+            RowBox[{"Epilog", "\[Rule]", 
+             RowBox[{"{", 
+              RowBox[{"Red", ",", 
+               RowBox[{"PointSize", "[", "Large", "]"}], ",", 
+               RowBox[{"Point", "[", "currentLocation", "]"}], ",", "Thick", 
+               ",", 
+               RowBox[{"Line", "[", 
+                RowBox[{"Transpose", "[", 
+                 RowBox[{"{", 
+                  RowBox[{"from", ",", "to"}], "}"}], "]"}], "]"}], ",", 
+               "Thin", ",", 
+               RowBox[{"Line", "[", 
+                RowBox[{"Transpose", "[", 
+                 RowBox[{"{", 
+                  RowBox[{
+                   RowBox[{"locations", "\[LeftDoubleBracket]", 
+                    RowBox[{"1", ";;", 
+                    RowBox[{"j", "-", "1"}]}], "\[RightDoubleBracket]"}], ",", 
+                   RowBox[{"locations", "\[LeftDoubleBracket]", 
+                    RowBox[{"2", ";;", "j"}], "\[RightDoubleBracket]"}]}], 
+                  "}"}], "]"}], "]"}]}], "}"}]}]}], "]"}]}], "]"}], ",", 
+        RowBox[{"{", 
+         RowBox[{"j", ",", "1", ",", "iterations", ",", "1"}], "}"}]}], 
+       "]"}]}], ";", "\[IndentingNewLine]", 
+     RowBox[{"Print", "[", 
+      RowBox[{"Grid", "[", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{"optimum", ",", "resultsPlot"}], "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{"meansPlot", ",", "animation"}], "}"}]}], "}"}], ",", 
+        RowBox[{"Frame", "\[Rule]", "All"}], ",", 
+        RowBox[{"Alignment", "\[Rule]", "Left"}], ",", 
+        RowBox[{"ItemSize", "\[Rule]", 
+         RowBox[{"{", 
+          RowBox[{"36", ",", "25"}], "}"}]}]}], "]"}], "]"}], ";"}]}], 
+   "\[IndentingNewLine]", "]"}]}]], "Input",
+ CellLabel->"In[4]:=",ExpressionUUID->"dd058d64-6f78-4c35-9303-7347edc0bb8b"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"SphericFunction2D", "[", 
+    RowBox[{"x_", ",", "y_"}], "]"}], ":=", 
+   RowBox[{"-", 
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{"x", "^", "2"}], "+", 
+      RowBox[{"y", "^", "2"}]}], ")"}]}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"AckleyFunction2D", "[", 
+    RowBox[{"x_", ",", "y_"}], "]"}], ":=", 
+   RowBox[{"-", 
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"-", "20"}], "*", 
+       RowBox[{"Exp", "[", 
+        RowBox[{
+         RowBox[{"-", "0.2"}], "*", 
+         SqrtBox[
+          RowBox[{
+           RowBox[{"1", "/", "2"}], "*", 
+           RowBox[{"(", 
+            RowBox[{
+             RowBox[{"x", "^", "2"}], "+", 
+             RowBox[{"y", "^", "2"}]}], ")"}]}]]}], "]"}]}], "-", 
+      RowBox[{"Exp", "[", 
+       RowBox[{
+        RowBox[{"1", "/", "2"}], "*", 
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{"Cos", "[", 
+           RowBox[{"2", "*", "Pi", "*", "x"}], "]"}], "+", 
+          RowBox[{"Cos", "[", 
+           RowBox[{"2", "*", "Pi", "*", "y"}], "]"}]}], ")"}]}], "]"}], "+", 
+      "20", "+", "\[ExponentialE]"}], ")"}]}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"RosenbrockFunction2D", "[", 
+    RowBox[{"x_", ",", "y_"}], "]"}], ":=", 
+   RowBox[{"-", 
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{"1", "-", "x"}], ")"}], "^", "2"}], "+", 
+      RowBox[{"100", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"y", "-", 
+          RowBox[{"x", "^", "2"}]}], ")"}], "^", "2"}]}]}], ")"}]}]}], 
+  ";"}]}], "Input",
+ CellLabel->"In[5]:=",ExpressionUUID->"bf2bedf5-8b65-4ad7-8f70-2f71d1441554"],
+
+Cell["->funkcja sferyczna", "Text",
+ CellChangeTimes->{{3.8924836155051956`*^9, 
+  3.8924836205149946`*^9}},ExpressionUUID->"292ad4cb-5e66-4fc2-bb25-\
+ef91b5abafa3"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"popSpheric", "=", 
+   RowBox[{"Table", "[", 
+    RowBox[{
+     RowBox[{"RandomReal", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"-", "10"}], ",", "10"}], "}"}], ",", "2"}], "]"}], ",", " ", 
+     RowBox[{"{", 
+      RowBox[{"i", ",", "1", ",", "30"}], "}"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"dzialanieHeurystyki", "[", 
+  RowBox[{"differentialEvolution", "[", 
+   RowBox[{
+   "SphericFunction2D", ",", "popSpheric", ",", "30", ",", "20", ",", " ", 
+    RowBox[{"-", "10"}], ",", "10"}], "]"}], "]"}]}], "Input",
+ CellChangeTimes->{{3.892483634357304*^9, 3.8924836438386784`*^9}, {
+  3.892483905164821*^9, 3.892483906775981*^9}, {3.8930548817264013`*^9, 
+  3.893054932936227*^9}, {3.893054966291579*^9, 3.8930549666755037`*^9}, {
+  3.893055108938208*^9, 3.8930551468352547`*^9}},
+ CellLabel->"In[8]:=",ExpressionUUID->"a260346a-8c00-488d-9977-cf974f60163d"],
+
+Cell["->funkcja Ackley\[CloseCurlyQuote]a", "Text",
+ CellChangeTimes->{
+  3.892483732174909*^9},ExpressionUUID->"f684b5df-3848-437a-8d12-\
+e4922fe23e1a"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"popAckley", "=", 
+   RowBox[{"Table", "[", 
+    RowBox[{
+     RowBox[{"RandomReal", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"-", "10"}], ",", "10"}], "}"}], ",", "2"}], "]"}], ",", " ", 
+     RowBox[{"{", 
+      RowBox[{"i", ",", "1", ",", "20"}], "}"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"dzialanieHeurystyki", "[", 
+  RowBox[{"differentialEvolution", "[", 
+   RowBox[{
+   "AckleyFunction2D", ",", "popAckley", ",", "20", ",", "30", ",", " ", 
+    RowBox[{"-", "10"}], ",", "10"}], "]"}], "]"}]}], "Input",
+ CellChangeTimes->{{3.8924837464564056`*^9, 3.892483757057652*^9}, {
+  3.893055301019294*^9, 3.8930553667507687`*^9}},
+ CellLabel->"In[10]:=",ExpressionUUID->"829e65f0-255a-4cfb-9fa6-e733211e84ff"],
+
+Cell["->dolina Rosenbrocka", "Text",
+ CellChangeTimes->{
+  3.8924838817787743`*^9},ExpressionUUID->"3a0fcade-8458-46f9-a80a-\
+c433d63f51b7"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"popRosenbrock", "=", 
+   RowBox[{"Table", "[", 
+    RowBox[{
+     RowBox[{"RandomReal", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"-", "10"}], ",", "10"}], "}"}], ",", "2"}], "]"}], ",", " ", 
+     RowBox[{"{", 
+      RowBox[{"i", ",", "1", ",", "30"}], "}"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"dzialanieHeurystyki", "[", 
+  RowBox[{"differentialEvolution", "[", 
+   RowBox[{
+   "RosenbrockFunction2D", ",", "popRosenbrock", ",", " ", "30", ",", "20", 
+    ",", " ", 
+    RowBox[{"-", "10"}], ",", "10"}], "]"}], "]"}]}], "Input",
+ CellChangeTimes->{{3.8924838992325373`*^9, 3.8924840202892933`*^9}, {
+   3.89248411836621*^9, 3.8924841286466045`*^9}, {3.8924842992929115`*^9, 
+   3.892484342316564*^9}, 3.8924843787185464`*^9, 3.8928943217794685`*^9, {
+   3.8930553790842953`*^9, 3.8930553985230274`*^9}, 3.893055475036116*^9},
+ CellLabel->"In[12]:=",ExpressionUUID->"fa9e741e-5d4c-478c-a3e0-910f76a21d68"],
+
+Cell["\<\
+Przy mniejszej populacji ewolucja r\[OAcute]\:017cnicowa wpada\[LSlash]a w \
+minima lokalne i mia\[LSlash]a problem ze znalezieniem minimum globalnego. \
+Jednak po zwi\:0119kszeniu populacji znajduje rozwi\:0105zanie. Przy pozosta\
+\[LSlash]ych 2 funkcjach nie by\[LSlash]o tego problemu, przy ma\[LSlash]ym \
+rozmiarze populacji znajdowa\[LSlash]o rozwi\:0105zanie.\
+\>", "Text",
+ CellChangeTimes->{{3.892484423606304*^9, 
+  3.8924845754852667`*^9}},ExpressionUUID->"d3359d9b-d49b-4a95-8796-\
+79416d7d6151"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["3. Por\[OAcute]wnaj dzia\[LSlash]anie ER z AE.", "Subtitle",
+ CellChangeTimes->{{3.892484589976365*^9, 
+  3.8924845950043817`*^9}},ExpressionUUID->"1ba1e8da-8432-41fe-8cf8-\
+f4e6a501d9b1"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"rouletteSelection", "[", 
+    RowBox[{"f_", ",", " ", "population_"}], "]"}], ":=", 
+   RowBox[{"Module", "[", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "fitness", ",", "fitnessScaled", ",", "sum", ",", " ", "rouletteWheel", 
+       ",", "selectedIndices"}], "}"}], ",", "\[IndentingNewLine]", 
+     "\[IndentingNewLine]", 
+     RowBox[{"(*", " ", 
+      RowBox[{
+      "obliczenie", " ", "warto\:015bci", " ", "funkcji", " ", "dla", " ", 
+       "calej", " ", "populacji"}], " ", "*)"}], "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"fitness", "=", 
+       RowBox[{"Map", "[", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"f", " ", "@@", " ", "#"}], " ", "&"}], ",", "population"}],
+         "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{
+        RowBox[{"przeskalowanie", " ", 
+         RowBox[{"(", 
+          RowBox[{"skalowanie", " ", "liniowe"}], ")"}], " ", "warto\:015bci",
+          " ", "funkcji"}], ",", " ", 
+        RowBox[{
+        "aby", " ", "nie", " ", "by\[LSlash]o", " ", "warto\:015bci", " ", 
+         "ujemnych", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+         "przeskalowane", " ", "warto\:015bci", " ", "b\:0119d\:0105", " ", 
+         "od", " ", "0", " ", "do", " ", "1"}]}], " ", "*)"}], 
+      "\[IndentingNewLine]", 
+      RowBox[{"fitnessScaled", "=", 
+       RowBox[{"Rescale", "[", "fitness", "]"}]}], ";", "\[IndentingNewLine]",
+       "\[IndentingNewLine]", 
+      RowBox[{"(*", " ", 
+       RowBox[{
+       "suma", " ", "wszytskich", " ", "warto\:015bci", " ", "funkcji"}], " ",
+        "*)"}], "\[IndentingNewLine]", 
+      RowBox[{"sum", "=", 
+       RowBox[{"Total", "[", "fitnessScaled", "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"(*", " ", 
+       RowBox[{
+       "stworzenie", " ", "przedzia\[LSlash]\[OAcute]w", " ", "dla", " ", 
+        "ka\:017cdej", " ", "z", " ", "warto\:015bci", " ", "za", " ", 
+        "pomoc\:0105", " ", "sumy", " ", "skumulowanej", " ", 
+        "prawdopodobie\:0144stw", " ", "danych", " ", "warto\:015bci", " ", 
+        "funkcji"}], " ", "*)"}], "\[IndentingNewLine]", 
+      RowBox[{"rouletteWheel", "=", 
+       RowBox[{"Accumulate", "[", 
+        RowBox[{"fitnessScaled", "/", "sum"}], "]"}]}], ";", 
+      "\[IndentingNewLine]", "\n", 
+      RowBox[{"(*", 
+       RowBox[{
+        RowBox[{
+         RowBox[{
+          RowBox[{"losowanie", " ", "osobnik\[OAcute]w"}], " ", "-", " ", 
+          RowBox[{
+          "generowanie", " ", "liczby", " ", "z", " ", 
+           "przedzia\[LSlash]u"}]}], " ", "<", "0"}], ",", 
+        RowBox[{"1", ">", " ", 
+         RowBox[{"i", " ", "wybieany", " ", "jest", " ", "osobnik"}]}], ",", 
+        " ", 
+        RowBox[{
+        "kt\[OAcute]rego", " ", "przedzia\[LSlash]", " ", "jest", " ", 
+         "r\[OAcute]wny", " ", "wylosowanej", " ", "warto\:015bci", " ", 
+         "lub", " ", "jest", " ", "wi\:0119kszy"}]}], "*)"}], 
+      "\[IndentingNewLine]", 
+      RowBox[{"selectedIndices", "=", 
+       RowBox[{"Table", "[", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"Position", "[", 
+           RowBox[{"rouletteWheel", ",", 
+            RowBox[{"x_", "/;", 
+             RowBox[{"x", "\[GreaterEqual]", 
+              RowBox[{"RandomReal", "[", "]"}]}]}]}], "]"}], "[", 
+          RowBox[{"[", 
+           RowBox[{"1", ",", "1"}], "]"}], "]"}], ",", 
+         RowBox[{"{", 
+          RowBox[{"Length", "[", "fitness", "]"}], "}"}]}], "]"}]}], ";", 
+      "\n", 
+      RowBox[{"(*", 
+       RowBox[{
+       "zwr\[OAcute]cenie", " ", "wybranych", " ", "osobnik\[OAcute]w"}], 
+       "*)"}], "\[IndentingNewLine]", 
+      RowBox[{"Return", "[", 
+       RowBox[{"Part", "[", 
+        RowBox[{"population", ",", "selectedIndices"}], "]"}], "]"}], ";"}]}],
+     "\[IndentingNewLine]", "\[IndentingNewLine]", "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"crossover", "[", 
+    RowBox[{"parent1_", ",", "parent2_"}], "]"}], ":=", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", "child", "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"(*", 
+      RowBox[{"krzy\:017cowanie", " ", "u\:015bredniajace"}], "*)"}], 
+     "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"child", "=", 
+       RowBox[{"parent1", "+", 
+        RowBox[{
+         RowBox[{"RandomReal", "[", "]"}], "*", 
+         RowBox[{"(", 
+          RowBox[{"parent2", "-", "parent1"}], ")"}]}]}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{"zwr\[OAcute]cenie", " ", "potomka"}], "*)"}], 
+      "\[IndentingNewLine]", 
+      RowBox[{"Return", "[", "child", "]"}], ";"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"mutation", "[", "x_", "]"}], ":=", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", "y", "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"(*", 
+      RowBox[{
+      "dodanie", " ", "do", " ", "osobnika", " ", "x", " ", "warto\:015bci", 
+       " ", "z", " ", "rozk\[LSlash]adu", " ", "normalnego"}], " ", "*)"}], 
+     "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"y", "=", 
+       RowBox[{"x", "+", 
+        RowBox[{"RandomReal", "[", 
+         RowBox[{
+          RowBox[{"{", "}"}], ",", 
+          RowBox[{"Length", "[", "x", "]"}]}], "]"}]}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"Return", "[", "y", "]"}], ";"}]}], "\[IndentingNewLine]", 
+    "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"evaluation", "[", 
+    RowBox[{
+    "f_", ",", "population_", ",", "valueOfBestChild_", ",", "bestChild1_"}], 
+    "]"}], ":=", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"evaluation", ",", " ", 
+       RowBox[{"bestValue", "=", "valueOfBestChild"}], ",", 
+       RowBox[{"p", "=", "population"}], ",", "bestChild"}], "}"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"bestChild", "=", "bestChild1"}], ";", "\[IndentingNewLine]", 
+      "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{"ocena", " ", "populacji"}], " ", "*)"}], 
+      "\[IndentingNewLine]", 
+      RowBox[{"Do", "[", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"evaluation", " ", "=", 
+          RowBox[{"f", " ", "@@", " ", 
+           RowBox[{
+           "p", "\[LeftDoubleBracket]", "j", "\[RightDoubleBracket]"}]}]}], 
+         ";", "\[IndentingNewLine]", 
+         RowBox[{"(*", 
+          RowBox[{
+           RowBox[{
+           "je\:015bli", " ", "bie\:017c\:0105ca", " ", 
+            "warto\:015b\[CAcute]", " ", "jest", " ", "wieksza", " ", "od", 
+            " ", "ogolnie", " ", "najlepszej", " ", "warto\:015bci"}], ",", 
+           " ", 
+           RowBox[{
+           "przypisanie", " ", "do", " ", "niej", " ", "tej", " ", 
+            "bie\:017c\:0105cej"}]}], "*)"}], "\[IndentingNewLine]", 
+         "\[IndentingNewLine]", 
+         RowBox[{"If", "[", 
+          RowBox[{
+           RowBox[{"evaluation", " ", ">", " ", "bestValue"}], ",", " ", 
+           "\[IndentingNewLine]", 
+           RowBox[{
+            RowBox[{"bestValue", "=", " ", "evaluation"}], ";", 
+            "\[IndentingNewLine]", 
+            RowBox[{"bestChild", " ", "=", 
+             RowBox[{
+             "p", "\[LeftDoubleBracket]", "j", "\[RightDoubleBracket]"}]}], 
+            ";"}]}], "\[IndentingNewLine]", "]"}], ";"}], 
+        "\[IndentingNewLine]", ",", 
+        RowBox[{"{", 
+         RowBox[{"j", ",", "1", ",", 
+          RowBox[{"Length", "[", "p", "]"}]}], "}"}]}], "]"}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{
+       "zwr\[OAcute]cenie", " ", "potrzebnych", " ", "warto\:015bci"}], 
+       "*)"}], "\[IndentingNewLine]", 
+      RowBox[{"Return", "[", 
+       RowBox[{"{", 
+        RowBox[{"bestChild", ",", " ", "bestValue"}], "}"}], "]"}], ";"}]}], 
+    "\[IndentingNewLine]", "]"}]}], ";"}], "\[IndentingNewLine]"}], "Input",
+ CellChangeTimes->{{3.8928941172523346`*^9, 3.8928941460211167`*^9}, {
+   3.8928944336056423`*^9, 3.8928944539769*^9}, {3.8928957797505093`*^9, 
+   3.892895781674111*^9}, {3.8928962210101814`*^9, 3.8928962383905735`*^9}, 
+   3.893054000657377*^9},
+ CellLabel->"In[14]:=",ExpressionUUID->"35839e97-eb73-4c73-a69f-5c73ebae16bc"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"evolutionaryAlgorithm", "[", 
+    RowBox[{
+    "f_", ",", " ", "population_", ",", "populationSize_", ",", " ", 
+     "probabilityOfCrossing_", ",", "probabilityOfMutation_", ",", " ", 
+     "numberOfGenerations_", ",", " ", "lowerLimit_", ",", "upperLimit_"}], 
+    "]"}], ":=", 
+   RowBox[{"Module", "[", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"basePopulation", "=", 
+        RowBox[{"{", "}"}]}], ",", 
+       RowBox[{"n", "=", "populationSize"}], ",", "childEvaluation", ",", " ",
+        "valueOfBestChild", ",", " ", "bestChild", ",", 
+       RowBox[{"bestChildren", "=", 
+        RowBox[{"{", "}"}]}], ",", 
+       RowBox[{"bestValues", "=", 
+        RowBox[{"{", "}"}]}], ",", "i", ",", " ", "j", ",", " ", "t", ",", 
+       "T", ",", "Ot", ",", "Ot2", ",", 
+       RowBox[{"pm", "=", "probabilityOfMutation"}], ",", 
+       RowBox[{"pc", "=", "probabilityOfCrossing"}], ",", 
+       "basePopulationFitness", ",", "indices", ",", 
+       RowBox[{"means", "=", 
+        RowBox[{"{", "}"}]}]}], "}"}], ",", "\[IndentingNewLine]", 
+     "\[IndentingNewLine]", 
+     RowBox[{"(*", 
+      RowBox[{"stworzenie", " ", "populacji", " ", "startowej"}], "*)"}], 
+     "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"basePopulation", "=", "population"}], ";", 
+      "\[IndentingNewLine]", "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{
+        RowBox[{"najlepsze", " ", "dziecko"}], " ", "-", " ", 
+        RowBox[{"pierwszy", " ", "z", " ", "populacji", " ", "startowej"}]}], 
+       "*)"}], "\[IndentingNewLine]", 
+      RowBox[{"bestChild", "=", " ", 
+       RowBox[{
+       "basePopulation", "\[LeftDoubleBracket]", "1", 
+        "\[RightDoubleBracket]"}]}], ";", "\[IndentingNewLine]", 
+      "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{"warto\:015b\[CAcute]", " ", "najlepszego", " ", "dziecka"}], 
+       "*)"}], "\[IndentingNewLine]", 
+      RowBox[{"valueOfBestChild", " ", "=", " ", 
+       RowBox[{"f", " ", "@@", " ", "bestChild"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{
+       "dodanie", " ", "do", " ", "odpowiednich", " ", "list", " ", 
+        "powy\:017cszych", " ", "zmiennych"}], "*)"}], "\[IndentingNewLine]", 
+      RowBox[{"bestChildren", "=", 
+       RowBox[{"Append", "[", 
+        RowBox[{"bestChildren", ",", "bestChild"}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"bestValues", "=", 
+       RowBox[{"Append", "[", 
+        RowBox[{"bestValues", ",", "valueOfBestChild"}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"t", "=", "0"}], ";", "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{"algorytm", " ", "ewolucyjny"}], "*)"}], "\[IndentingNewLine]", 
+      RowBox[{"Do", "[", "\[IndentingNewLine]", 
+       RowBox[{"(*", 
+        RowBox[{"ocena", " ", "populacji"}], "*)"}], "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{"bestChild", ",", " ", "valueOfBestChild"}], "}"}], "=", 
+          RowBox[{"evaluation", "[", 
+           RowBox[{
+           "f", ",", "basePopulation", ",", "valueOfBestChild", ",", 
+            "bestChild"}], "]"}]}], ";", "\[IndentingNewLine]", 
+         "\[IndentingNewLine]", 
+         RowBox[{"(*", 
+          RowBox[{"ruletkowa", " ", "selekcja", " ", "osobnik\[OAcute]w"}], 
+          "*)"}], "\[IndentingNewLine]", 
+         RowBox[{"T", "=", 
+          RowBox[{"rouletteSelection", "[", 
+           RowBox[{"f", ",", "basePopulation"}], "]"}]}], ";", 
+         "\[IndentingNewLine]", "\[IndentingNewLine]", 
+         RowBox[{"(*", "mutacja", "*)"}], "\[IndentingNewLine]", 
+         RowBox[{"Ot", "=", "T"}], ";", "\[IndentingNewLine]", 
+         RowBox[{"For", "[", 
+          RowBox[{
+           RowBox[{"i", "=", "1"}], ",", 
+           RowBox[{"i", "\[LessEqual]", " ", 
+            RowBox[{"Length", "[", "Ot", "]"}]}], ",", 
+           RowBox[{"i", "++"}], ",", "\[IndentingNewLine]", 
+           RowBox[{"(*", 
+            RowBox[{
+            "osobnik", " ", "ulega", " ", "mutacji", " ", "je\:015bli", " ", 
+             "warto\:015b\[CAcute]", " ", "pseudolosowa", " ", "jest", " ", 
+             "mniejsza", " ", "od", " ", "podanego", " ", 
+             "prawdopodobie\:0144stwa", " ", "mutacji"}], " ", "*)"}], 
+           "\[IndentingNewLine]", 
+           RowBox[{
+            RowBox[{"If", "[", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"RandomReal", "[", "]"}], "\[LessEqual]", " ", "pm"}], 
+              ",", 
+              RowBox[{
+               RowBox[{
+               "Ot", "\[LeftDoubleBracket]", "i", "\[RightDoubleBracket]"}], 
+               "=", 
+               RowBox[{"mutation", "[", 
+                RowBox[{
+                "Ot", "\[LeftDoubleBracket]", "i", "\[RightDoubleBracket]"}], 
+                "]"}]}]}], "]"}], ";"}]}], "\[IndentingNewLine]", "]"}], ";", 
+         "\[IndentingNewLine]", "\[IndentingNewLine]", 
+         RowBox[{"Ot2", "=", "Ot"}], ";", "\[IndentingNewLine]", "\n", 
+         RowBox[{"(*", "krzy\:017cowanie", "*)"}], "\[IndentingNewLine]", 
+         RowBox[{"For", "[", 
+          RowBox[{
+           RowBox[{"i", "=", "1"}], ",", 
+           RowBox[{"i", "\[LessEqual]", " ", 
+            RowBox[{"Length", "[", "Ot", "]"}]}], ",", 
+           RowBox[{"i", "++"}], ",", "\[IndentingNewLine]", 
+           RowBox[{"(*", 
+            RowBox[{
+             RowBox[{
+             "osobnik", " ", "ulega", " ", "krzy\:017cowaniu", " ", 
+              "je\:015bli", " ", "warto\:015b\[CAcute]", " ", "pseudolosowa", 
+              " ", "jest", " ", "mniejsza", " ", "od", " ", "podanego", " ", 
+              "prawdopodobie\:0144stwa", " ", "kry\:017cowania"}], ";", " ", 
+             RowBox[{
+             "losowy", " ", "wyb\[OAcute]r", " ", "rodzic\[OAcute]w"}]}], " ",
+             "*)"}], "\[IndentingNewLine]", 
+           RowBox[{
+            RowBox[{"If", "[", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"RandomReal", "[", "]"}], "\[LessEqual]", " ", "pc"}], 
+              ",", 
+              RowBox[{
+               RowBox[{
+               "Ot2", "\[LeftDoubleBracket]", "i", "\[RightDoubleBracket]"}], 
+               "=", 
+               RowBox[{"crossover", "[", 
+                RowBox[{
+                 RowBox[{"RandomChoice", "[", "Ot", "]"}], ",", 
+                 RowBox[{"RandomChoice", "[", "Ot", "]"}]}], "]"}]}]}], "]"}],
+             ";"}]}], "\[IndentingNewLine]", "]"}], ";", 
+         "\[IndentingNewLine]", "\[IndentingNewLine]", 
+         RowBox[{"(*", 
+          RowBox[{"ocena", " ", "osobnik\[OAcute]w"}], "*)"}], 
+         "\[IndentingNewLine]", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{"bestChild", ",", " ", "valueOfBestChild"}], "}"}], "=", 
+          RowBox[{"evaluation", "[", 
+           RowBox[{
+           "f", ",", "Ot2", ",", "valueOfBestChild", ",", "bestChild"}], 
+           "]"}]}], ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+         RowBox[{"(*", 
+          RowBox[{"sukcesja", " ", "elitarna"}], "*)"}], 
+         "\[IndentingNewLine]", 
+         RowBox[{"(*", 
+          RowBox[{
+          "po\[LSlash]\:0105cznie", " ", "populacji", " ", "przed", " ", "i", 
+           " ", "po", " ", "opeatorach", " ", "genetycznych"}], "*)"}], 
+         "\[IndentingNewLine]", 
+         RowBox[{"basePopulation", "=", 
+          RowBox[{"Join", "[", 
+           RowBox[{"basePopulation", ",", "Ot2"}], "]"}]}], ";", 
+         "\[IndentingNewLine]", "\[IndentingNewLine]", 
+         RowBox[{"basePopulationFitness", "=", 
+          RowBox[{"Map", "[", 
+           RowBox[{
+            RowBox[{
+             RowBox[{"f", " ", "@@", " ", "#"}], " ", "&"}], ",", 
+            "basePopulation"}], "]"}]}], ";", "\n", "        ", 
+         RowBox[{"(*", 
+          RowBox[{
+          "zwr\[OAcute]cenie", " ", "n", " ", "najlepszych", " ", 
+           "osobnik\[OAcute]w"}], "*)"}], "\[IndentingNewLine]", 
+         RowBox[{"indices", "=", 
+          RowBox[{"Ordering", "[", 
+           RowBox[{"basePopulationFitness", ",", 
+            RowBox[{"-", "n"}]}], "]"}]}], ";", "\n", "\t", 
+         RowBox[{"basePopulation", "=", 
+          RowBox[{"basePopulation", "[", 
+           RowBox[{"[", "indices", "]"}], "]"}]}], ";", "\[IndentingNewLine]",
+          "\[IndentingNewLine]", 
+         RowBox[{"(*", 
+          RowBox[{
+          "dodanie", " ", "zmiennych", " ", "do", " ", "odpowiednich", " ", 
+           "list"}], " ", "*)"}], "\[IndentingNewLine]", 
+         RowBox[{"bestChildren", "=", 
+          RowBox[{"Append", "[", 
+           RowBox[{"bestChildren", ",", "bestChild"}], "]"}]}], ";", 
+         "\[IndentingNewLine]", 
+         RowBox[{"bestValues", "=", 
+          RowBox[{"Append", "[", 
+           RowBox[{"bestValues", ",", "valueOfBestChild"}], "]"}]}], ";", 
+         "\[IndentingNewLine]", 
+         RowBox[{"means", "=", 
+          RowBox[{"Append", "[", 
+           RowBox[{"means", ",", 
+            RowBox[{
+             RowBox[{"Total", "[", 
+              RowBox[{"Map", "[", 
+               RowBox[{
+                RowBox[{
+                 RowBox[{"f", " ", "@@", " ", "#"}], " ", "&"}], ",", 
+                "basePopulation"}], "]"}], "]"}], "/", 
+             RowBox[{"Length", "[", "basePopulation", "]"}]}]}], "]"}]}], ";",
+          "\[IndentingNewLine]", 
+         RowBox[{"t", "++"}], ";"}], "\[IndentingNewLine]", 
+        RowBox[{"(*", 
+         RowBox[{
+          RowBox[{"warunek", " ", "zatrzymania"}], " ", "-", " ", 
+          RowBox[{"liczba", " ", "generacji"}]}], " ", "*)"}], 
+        "\[IndentingNewLine]", ",", 
+        RowBox[{"{", 
+         RowBox[{"i", ",", "1", ",", "numberOfGenerations"}], "}"}]}], "]"}], 
+      ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+      RowBox[{"(*", " ", 
+       RowBox[{
+       "zwr\[OAcute]cenie", " ", "potrzebnych", " ", "warto\:015bci"}], " ", 
+       "*)"}], "\[IndentingNewLine]", 
+      RowBox[{"Return", "[", 
+       RowBox[{"{", 
+        RowBox[{
+        "bestChild", ",", "valueOfBestChild", ",", "bestValues", ",", "means",
+          ",", "bestChildren", ",", "f", ",", "lowerLimit", ",", "upperLimit",
+          ",", "lowerLimit", ",", "upperLimit", ",", "t"}], "}"}], "]"}], 
+      ";"}]}], "\[IndentingNewLine]", "]"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.8930542483916793`*^9, 3.893054252000347*^9}, {
+  3.893054288345435*^9, 3.8930542897476482`*^9}, {3.8930543470474176`*^9, 
+  3.893054350271824*^9}},
+ CellLabel->"In[18]:=",ExpressionUUID->"d5d3b2c4-da0d-4faf-bc34-59ca9182102f"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"resultComparison", "[", 
+     RowBox[{
+     "algorithm1_", ",", "algorithm2_", ",", "functionName_", ",", "min_", 
+      ",", "numTrials_"}], "]"}], ":=", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"bestValues1", "=", "0"}], ",", 
+        RowBox[{"bestValues2", "=", "0"}], ",", 
+        RowBox[{"mean1", "=", "0"}], ",", 
+        RowBox[{"mean2", "=", "0"}]}], "}"}], ",", "\[IndentingNewLine]", 
+      "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"For", "[", 
+        RowBox[{
+         RowBox[{"i", "=", "1"}], ",", 
+         RowBox[{"i", "\[LessEqual]", "numTrials"}], ",", 
+         RowBox[{"i", "++"}], ",", "\[IndentingNewLine]", 
+         RowBox[{
+          RowBox[{"bestValues1", "=", 
+           RowBox[{"bestValues1", "+", 
+            RowBox[{"algorithm1", "[", 
+             RowBox[{"[", "2", "]"}], "]"}]}]}], ";", "\[IndentingNewLine]", 
+          RowBox[{"bestValues2", "=", 
+           RowBox[{"bestValues2", "+", 
+            RowBox[{"algorithm2", "[", 
+             RowBox[{"[", "2", "]"}], "]"}]}]}], ";"}]}], 
+        "\[IndentingNewLine]", "]"}], ";", "\[IndentingNewLine]", 
+       "\[IndentingNewLine]", 
+       RowBox[{"mean1", "=", 
+        RowBox[{"bestValues1", "/", "numTrials"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"mean2", "=", 
+        RowBox[{"bestValues2", "/", "numTrials"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"Print", "[", 
+        RowBox[{"StringJoin", "[", 
+         RowBox[{"\"\<Wynik algorytmu ewolucyjnego: \>\"", ",", 
+          RowBox[{"ToString", "[", "mean1", "]"}]}], "]"}], "]"}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"Print", "[", 
+        RowBox[{"StringJoin", "[", 
+         RowBox[{"\"\<Wynik ewolucji r\[OAcute]\:017cnicowej: \>\"", ",", 
+          RowBox[{"ToString", "[", "mean2", "]"}]}], "]"}], "]"}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"If", "[", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"Abs", "[", 
+           RowBox[{"mean1", "-", "min"}], "]"}], "<", 
+          RowBox[{"Abs", "[", 
+           RowBox[{"mean2", "-", "min"}], "]"}]}], ",", " ", 
+         RowBox[{"Print", "[", 
+          RowBox[{"StringJoin", "[", 
+           RowBox[{
+           "\"\<Algorytm ewolucyjny okaza\[LSlash] si\:0119 lepszy dla \
+funkcji \>\"", ",", "functionName"}], "]"}], "]"}], ",", 
+         RowBox[{"Print", "[", 
+          RowBox[{"StringJoin", "[", 
+           RowBox[{
+           "\"\<Ewolucja r\[OAcute]\:017cnicowa okaza\[LSlash]a si\:0119 \
+lepsze dla funkcji \>\"", ",", "functionName"}], "]"}], "]"}]}], "]"}], 
+       ";"}]}], "\[IndentingNewLine]", "\[IndentingNewLine]", "]"}]}], ";"}], 
+  "\[IndentingNewLine]"}]], "Input",
+ CellChangeTimes->{{3.8928959558147697`*^9, 3.8928960052369175`*^9}},
+ CellLabel->"In[19]:=",ExpressionUUID->"f89376c6-03bb-42a5-b9a9-ccecbada00fc"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"pop1", "=", 
+   RowBox[{"Table", "[", 
+    RowBox[{
+     RowBox[{"RandomReal", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"-", "10"}], ",", "10"}], "}"}], ",", "2"}], "]"}], ",", " ", 
+     RowBox[{"{", 
+      RowBox[{"i", ",", "1", ",", "30"}], "}"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"resultComparison", "[", 
+   RowBox[{
+    RowBox[{"differentialEvolution", "[", 
+     RowBox[{
+     "SphericFunction2D", ",", "pop1", ",", " ", "30", ",", "20", ",", " ", 
+      RowBox[{"-", "10"}], ",", "10"}], "]"}], ",", 
+    RowBox[{"evolutionaryAlgorithm", "[", 
+     RowBox[{
+     "SphericFunction2D", ",", "pop1", ",", "30", ",", "0.2", ",", "0.2", ",",
+       "20", ",", 
+      RowBox[{"-", "10"}], ",", "10"}], "]"}], ",", "\"\<sferycznej.\>\"", 
+    ",", "0", ",", "100"}], "]"}], " "}]}], "Input",
+ CellChangeTimes->{{3.8928942063558245`*^9, 3.892894227289027*^9}, {
+   3.8928944608252954`*^9, 3.8928944632664385`*^9}, {3.8928949759417105`*^9, 
+   3.892894979050337*^9}, {3.8928959141278696`*^9, 3.8928959373379107`*^9}, 
+   3.892896098271983*^9, {3.892896134540462*^9, 3.892896134626273*^9}, {
+   3.8928961775868864`*^9, 3.8928962084713144`*^9}, {3.8928968189736586`*^9, 
+   3.892896833787716*^9}, {3.8930541699452977`*^9, 3.8930541857083025`*^9}, {
+   3.893054218305353*^9, 3.893054239626524*^9}, {3.8930544223164806`*^9, 
+   3.8930544307680626`*^9}, {3.893054560433329*^9, 3.8930545607764516`*^9}, {
+   3.893055039528202*^9, 3.8930550656962614`*^9}, {3.8930552233763075`*^9, 
+   3.8930552348904*^9}, {3.893055281365548*^9, 3.893055282117486*^9}},
+ CellLabel->"In[20]:=",ExpressionUUID->"33eaeef7-164b-4fec-b8de-699246a5b816"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData["\<\"Wynik algorytmu ewolucyjnego: -0.0000500268\"\>"], "Print",
+ CellChangeTimes->{{3.8930550813061686`*^9, 3.8930550939361553`*^9}, {
+   3.893055240938697*^9, 3.8930552833877487`*^9}, {3.8930559682235875`*^9, 
+   3.893055972595559*^9}, 3.893056260774138*^9},
+ CellLabel->
+  "During evaluation of \
+In[20]:=",ExpressionUUID->"acf87db8-47a0-4167-b812-6c03014bd565"],
+
+Cell[BoxData["\<\"Wynik ewolucji r\[OAcute]\:017cnicowej: -0.00553636\"\>"], \
+"Print",
+ CellChangeTimes->{{3.8930550813061686`*^9, 3.8930550939361553`*^9}, {
+   3.893055240938697*^9, 3.8930552833877487`*^9}, {3.8930559682235875`*^9, 
+   3.893055972595559*^9}, 3.8930562607807274`*^9},
+ CellLabel->
+  "During evaluation of \
+In[20]:=",ExpressionUUID->"c0a87f7f-2f21-4c2a-90d6-ab45fa1753b9"],
+
+Cell[BoxData["\<\"Algorytm ewolucyjny okaza\[LSlash] si\:0119 lepszy dla \
+funkcji sferycznej.\"\>"], "Print",
+ CellChangeTimes->{{3.8930550813061686`*^9, 3.8930550939361553`*^9}, {
+   3.893055240938697*^9, 3.8930552833877487`*^9}, {3.8930559682235875`*^9, 
+   3.893055972595559*^9}, 3.8930562607871776`*^9},
+ CellLabel->
+  "During evaluation of \
+In[20]:=",ExpressionUUID->"b8b325ed-3e2c-4921-bce5-878161ba47ff"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"pop2", "=", 
+   RowBox[{"Table", "[", 
+    RowBox[{
+     RowBox[{"RandomReal", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"-", "10"}], ",", "10"}], "}"}], ",", "2"}], "]"}], ",", " ", 
+     RowBox[{"{", 
+      RowBox[{"i", ",", "1", ",", "30"}], "}"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"resultComparison", "[", 
+   RowBox[{
+    RowBox[{"differentialEvolution", "[", 
+     RowBox[{
+     "AckleyFunction2D", ",", "pop2", ",", " ", "30", ",", "20", ",", " ", 
+      RowBox[{"-", "10"}], ",", "10"}], "]"}], ",", 
+    RowBox[{"evolutionaryAlgorithm", "[", 
+     RowBox[{
+     "AckleyFunction2D", ",", "pop2", ",", "30", ",", "0.6", ",", "0.6", ",", 
+      "20", ",", 
+      RowBox[{"-", "10"}], ",", "10"}], "]"}], ",", "\"\<Ackley'a.\>\"", ",", 
+    "0", ",", "100"}], "]"}], " "}]}], "Input",
+ CellChangeTimes->{{3.8928942522391896`*^9, 3.892894275502466*^9}, {
+  3.8928944662026424`*^9, 3.892894469180646*^9}, {3.8928959134224877`*^9, 
+  3.8928959397086935`*^9}, {3.892896888836866*^9, 3.8928968925532055`*^9}, {
+  3.8930545751354103`*^9, 3.893054590178082*^9}},
+ CellLabel->"In[22]:=",ExpressionUUID->"345f68da-da39-4156-9cf2-11b81d940b65"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData["\<\"Wynik algorytmu ewolucyjnego: -0.0266401\"\>"], "Print",
+ CellChangeTimes->{
+  3.8928959430239196`*^9, 3.892896013076388*^9, 3.892896145903294*^9, 
+   3.8928968251027317`*^9, 3.892896896791617*^9, {3.893053987925577*^9, 
+   3.8930540153029413`*^9}, {3.893054543908496*^9, 3.893054591920777*^9}, {
+   3.8930546760180836`*^9, 3.8930547073876014`*^9}, 3.8930550813806562`*^9, {
+   3.8930559748723493`*^9, 3.893055978699791*^9}, 3.8930562609718895`*^9},
+ CellLabel->
+  "During evaluation of \
+In[22]:=",ExpressionUUID->"681cd363-2bc0-4429-87f1-e40a29241d44"],
+
+Cell[BoxData["\<\"Wynik ewolucji r\[OAcute]\:017cnicowej: -2.87971\"\>"], \
+"Print",
+ CellChangeTimes->{
+  3.8928959430239196`*^9, 3.892896013076388*^9, 3.892896145903294*^9, 
+   3.8928968251027317`*^9, 3.892896896791617*^9, {3.893053987925577*^9, 
+   3.8930540153029413`*^9}, {3.893054543908496*^9, 3.893054591920777*^9}, {
+   3.8930546760180836`*^9, 3.8930547073876014`*^9}, 3.8930550813806562`*^9, {
+   3.8930559748723493`*^9, 3.893055978699791*^9}, 3.8930562609764156`*^9},
+ CellLabel->
+  "During evaluation of \
+In[22]:=",ExpressionUUID->"4db6641a-4113-4e84-8699-1e755a60e688"],
+
+Cell[BoxData["\<\"Algorytm ewolucyjny okaza\[LSlash] si\:0119 lepszy dla \
+funkcji Ackley'a.\"\>"], "Print",
+ CellChangeTimes->{
+  3.8928959430239196`*^9, 3.892896013076388*^9, 3.892896145903294*^9, 
+   3.8928968251027317`*^9, 3.892896896791617*^9, {3.893053987925577*^9, 
+   3.8930540153029413`*^9}, {3.893054543908496*^9, 3.893054591920777*^9}, {
+   3.8930546760180836`*^9, 3.8930547073876014`*^9}, 3.8930550813806562`*^9, {
+   3.8930559748723493`*^9, 3.893055978699791*^9}, 3.8930562609818373`*^9},
+ CellLabel->
+  "During evaluation of \
+In[22]:=",ExpressionUUID->"cb9d02db-8320-4e9f-8894-c4cf01388bff"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"pop3", "=", 
+   RowBox[{"Table", "[", 
+    RowBox[{
+     RowBox[{"RandomReal", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"-", "10"}], ",", "10"}], "}"}], ",", "2"}], "]"}], ",", " ", 
+     RowBox[{"{", 
+      RowBox[{"i", ",", "1", ",", "30"}], "}"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"resultComparison", "[", 
+  RowBox[{
+   RowBox[{"differentialEvolution", "[", 
+    RowBox[{
+    "RosenbrockFunction2D", ",", "pop3", ",", " ", "30", ",", "20", ",", " ", 
+     RowBox[{"-", "10"}], ",", "10"}], "]"}], ",", 
+   RowBox[{"evolutionaryAlgorithm", "[", 
+    RowBox[{
+    "RosenbrockFunction2D", ",", "pop3", ",", "30", ",", "0.3", ",", "0.3", 
+     ",", "20", ",", 
+     RowBox[{"-", "10"}], ",", "10"}], "]"}], ",", "\"\<Rosenbrock'a.\>\"", 
+   ",", "0", ",", "100"}], "]"}]}], "Input",
+ CellChangeTimes->{{3.892894972701703*^9, 3.8928949822301297`*^9}, {
+  3.892895468777054*^9, 3.892895485646978*^9}, {3.8928958790846896`*^9, 
+  3.89289588351702*^9}, {3.892895918777772*^9, 3.8928959302557945`*^9}, {
+  3.892896903256127*^9, 3.8928969072102594`*^9}, {3.8928969787013073`*^9, 
+  3.892897005207323*^9}, {3.893054600736476*^9, 3.893054618341732*^9}},
+ CellLabel->"In[28]:=",ExpressionUUID->"364460e4-5330-4ec7-b138-6d8b8317c5c0"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData["\<\"Wynik algorytmu ewolucyjnego: -0.987914\"\>"], "Print",
+ CellChangeTimes->{
+  3.892894987731779*^9, {3.8928954355870433`*^9, 3.8928954880322723`*^9}, {
+   3.892895792189929*^9, 3.892895910781907*^9}, 3.8928959461426344`*^9, 
+   3.8928960157520475`*^9, 3.89289614602495*^9, 3.8928968253469553`*^9, 
+   3.8928969080138426`*^9, {3.8928969791872606`*^9, 3.8928970245791583`*^9}, 
+   3.8930539879940434`*^9, {3.8930540215961246`*^9, 3.8930540421893735`*^9}, 
+   3.893054544136168*^9, {3.8930546191193967`*^9, 3.8930546386993246`*^9}, 
+   3.8930550814461994`*^9, 3.8930554211862583`*^9, 3.8930562612535467`*^9, {
+   3.8930563175050683`*^9, 3.893056319591813*^9}},
+ CellLabel->
+  "During evaluation of \
+In[28]:=",ExpressionUUID->"dfbb184d-eeac-4c61-837a-9e9b90856706"],
+
+Cell[BoxData["\<\"Wynik ewolucji r\[OAcute]\:017cnicowej: -0.173616\"\>"], \
+"Print",
+ CellChangeTimes->{
+  3.892894987731779*^9, {3.8928954355870433`*^9, 3.8928954880322723`*^9}, {
+   3.892895792189929*^9, 3.892895910781907*^9}, 3.8928959461426344`*^9, 
+   3.8928960157520475`*^9, 3.89289614602495*^9, 3.8928968253469553`*^9, 
+   3.8928969080138426`*^9, {3.8928969791872606`*^9, 3.8928970245791583`*^9}, 
+   3.8930539879940434`*^9, {3.8930540215961246`*^9, 3.8930540421893735`*^9}, 
+   3.893054544136168*^9, {3.8930546191193967`*^9, 3.8930546386993246`*^9}, 
+   3.8930550814461994`*^9, 3.8930554211862583`*^9, 3.8930562612535467`*^9, {
+   3.8930563175050683`*^9, 3.893056319593439*^9}},
+ CellLabel->
+  "During evaluation of \
+In[28]:=",ExpressionUUID->"0733da1a-c1f1-4d98-9efc-e7cc8f3a7b29"],
+
+Cell[BoxData["\<\"Ewolucja r\[OAcute]\:017cnicowa okaza\[LSlash]a si\:0119 \
+lepsze dla funkcji Rosenbrock'a.\"\>"], "Print",
+ CellChangeTimes->{
+  3.892894987731779*^9, {3.8928954355870433`*^9, 3.8928954880322723`*^9}, {
+   3.892895792189929*^9, 3.892895910781907*^9}, 3.8928959461426344`*^9, 
+   3.8928960157520475`*^9, 3.89289614602495*^9, 3.8928968253469553`*^9, 
+   3.8928969080138426`*^9, {3.8928969791872606`*^9, 3.8928970245791583`*^9}, 
+   3.8930539879940434`*^9, {3.8930540215961246`*^9, 3.8930540421893735`*^9}, 
+   3.893054544136168*^9, {3.8930546191193967`*^9, 3.8930546386993246`*^9}, 
+   3.8930550814461994`*^9, 3.8930554211862583`*^9, 3.8930562612535467`*^9, {
+   3.8930563175050683`*^9, 3.893056319595951*^9}},
+ CellLabel->
+  "During evaluation of \
+In[28]:=",ExpressionUUID->"141a8325-6e18-4b70-9f78-2b3a10710692"]
+}, Open  ]]
+}, Open  ]],
+
+Cell["\<\
+Por\[OAcute]wna\[LSlash]am algorytm ewolucyjny z ewolucj\:0105 r\[OAcute]\
+\:017cnicow\:0105 bior\:0105c \:015bredni\:0105 najlepszych wynik\[OAcute]w w \
+stu powt\[OAcute]rzeniach przy tej samej populacji startowej oraz liczby \
+generacji, gdy\:017c jest to warunek zatrzymania obu algorytm\[OAcute]w.\
+\[LineSeparator]Przy dolinie Rosenbrock\[CloseCurlyQuote]a wyniki algorytm\
+\[OAcute]w s\:0105 przemiennie lepsze. Z kolei w przypadku funkcji sferycznej \
+oraz Ackley\[CloseCurlyQuote]a prawie zawsze wynik algorytmu ewolucyjnego \
+jest lepszy w por\[OAcute]wnaniu do ewolucji r\[OAcute]\:017cnicowej.\
+\>", "Text",
+ CellChangeTimes->{{3.8930546427480183`*^9, 3.893054670536277*^9}, {
+  3.8930547285883403`*^9, 3.8930548632203627`*^9}, {3.8930559826484475`*^9, 
+  3.893056028244275*^9}, {3.8930561798954644`*^9, 
+  3.8930562026785407`*^9}},ExpressionUUID->"25cdee62-3d1b-4bfd-ab11-\
+2489b0f20da5"]
+}, Open  ]]
+},
+WindowSize->{574.8, 640.8},
+WindowMargins->{{223.79999999999998`, Automatic}, {Automatic, 66}},
+TaggingRules->{
+ "WelcomeScreenSettings" -> {"FEStarting" -> False}, "TryRealOnly" -> False},
+FrontEndVersion->"12.1 for Microsoft Windows (64-bit) (June 19, 2020)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"f9055749-c5c0-46a9-b612-eefdbb2e22ab"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[580, 22, 207, 3, 53, "Subtitle",ExpressionUUID->"5eaf5857-87e5-4210-bfae-5470ca81b39b"],
+Cell[790, 27, 16990, 357, 1980, "Input",ExpressionUUID->"cfe265ca-d5a9-4eb9-983d-ecc2927c956d"],
+Cell[17783, 386, 342, 10, 28, "Input",ExpressionUUID->"3d46fabe-8919-4900-ae55-d761a89e649b"],
+Cell[CellGroupData[{
+Cell[18150, 400, 520, 8, 28, "Input",ExpressionUUID->"85438001-2e5f-41e0-80eb-37685c5d3a0f"],
+Cell[18673, 410, 2685, 38, 32, "Output",ExpressionUUID->"bb10be46-9afe-4eef-872c-87ce2b8c5f78"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[21407, 454, 332, 7, 149, "Subtitle",ExpressionUUID->"dfc2793b-c82c-4621-a904-f6ca762f4816"],
+Cell[21742, 463, 182, 3, 35, "Text",ExpressionUUID->"f7d6ca2e-f180-4125-9f9f-1de11fe6a689"],
+Cell[21927, 468, 7149, 170, 641, "Input",ExpressionUUID->"dd058d64-6f78-4c35-9303-7347edc0bb8b"],
+Cell[29079, 640, 1708, 55, 94, "Input",ExpressionUUID->"bf2bedf5-8b65-4ad7-8f70-2f71d1441554"],
+Cell[30790, 697, 165, 3, 35, "Text",ExpressionUUID->"292ad4cb-5e66-4fc2-bb25-ef91b5abafa3"],
+Cell[30958, 702, 947, 22, 65, "Input",ExpressionUUID->"a260346a-8c00-488d-9977-cf974f60163d"],
+Cell[31908, 726, 153, 3, 35, "Text",ExpressionUUID->"f684b5df-3848-437a-8d12-e4922fe23e1a"],
+Cell[32064, 731, 797, 20, 65, "Input",ExpressionUUID->"829e65f0-255a-4cfb-9fa6-e733211e84ff"],
+Cell[32864, 753, 140, 3, 35, "Text",ExpressionUUID->"3a0fcade-8458-46f9-a80a-c433d63f51b7"],
+Cell[33007, 758, 997, 23, 65, "Input",ExpressionUUID->"fa9e741e-5d4c-478c-a3e0-910f76a21d68"],
+Cell[34007, 783, 518, 9, 58, "Text",ExpressionUUID->"d3359d9b-d49b-4a95-8796-79416d7d6151"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[34562, 797, 194, 3, 53, "Subtitle",ExpressionUUID->"1ba1e8da-8432-41fe-8cf8-f4e6a501d9b1"],
+Cell[34759, 802, 8275, 205, 1264, "Input",ExpressionUUID->"35839e97-eb73-4c73-a69f-5c73ebae16bc"],
+Cell[43037, 1009, 10613, 236, 1487, "Input",ExpressionUUID->"d5d3b2c4-da0d-4faf-bc34-59ca9182102f"],
+Cell[53653, 1247, 2933, 70, 421, "Input",ExpressionUUID->"f89376c6-03bb-42a5-b9a9-ccecbada00fc"],
+Cell[CellGroupData[{
+Cell[56611, 1321, 1726, 36, 85, "Input",ExpressionUUID->"33eaeef7-164b-4fec-b8de-699246a5b816"],
+Cell[CellGroupData[{
+Cell[58362, 1361, 378, 6, 21, "Print",ExpressionUUID->"acf87db8-47a0-4167-b812-6c03014bd565"],
+Cell[58743, 1369, 390, 7, 21, "Print",ExpressionUUID->"c0a87f7f-2f21-4c2a-90d6-ab45fa1753b9"],
+Cell[59136, 1378, 413, 7, 21, "Print",ExpressionUUID->"b8b325ed-3e2c-4921-bce5-878161ba47ff"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[59598, 1391, 1241, 30, 85, "Input",ExpressionUUID->"345f68da-da39-4156-9cf2-11b81d940b65"],
+Cell[CellGroupData[{
+Cell[60864, 1425, 572, 9, 21, "Print",ExpressionUUID->"681cd363-2bc0-4429-87f1-e40a29241d44"],
+Cell[61439, 1436, 582, 10, 21, "Print",ExpressionUUID->"4db6641a-4113-4e84-8699-1e755a60e688"],
+Cell[62024, 1448, 606, 10, 21, "Print",ExpressionUUID->"cb9d02db-8320-4e9f-8894-c4cf01388bff"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[62679, 1464, 1316, 30, 85, "Input",ExpressionUUID->"364460e4-5330-4ec7-b138-6d8b8317c5c0"],
+Cell[CellGroupData[{
+Cell[64020, 1498, 780, 12, 21, "Print",ExpressionUUID->"dfbb184d-eeac-4c61-837a-9e9b90856706"],
+Cell[64803, 1512, 792, 13, 21, "Print",ExpressionUUID->"0733da1a-c1f1-4d98-9efc-e7cc8f3a7b29"],
+Cell[65598, 1527, 832, 13, 21, "Print",ExpressionUUID->"141a8325-6e18-4b70-9f78-2b3a10710692"]
+}, Open  ]]
+}, Open  ]],
+Cell[66457, 1544, 911, 14, 104, "Text",ExpressionUUID->"25cdee62-3d1b-4bfd-ab11-2489b0f20da5"]
+}, Open  ]]
+}
+]
+*)
+
